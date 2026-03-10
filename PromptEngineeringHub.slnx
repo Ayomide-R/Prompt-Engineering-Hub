@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PromptHub.Api/PromptHub.Api.csproj" />
+    <Project Path="src/PromptHub.Application/PromptHub.Application.csproj" />
+    <Project Path="src/PromptHub.Domain/PromptHub.Domain.csproj" />
+    <Project Path="src/PromptHub.Infrastructure/PromptHub.Infrastructure.csproj" />
+  </Folder>
+</Solution>
