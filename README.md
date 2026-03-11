@@ -54,14 +54,20 @@ This project is built using a highly decoupled **Clean Architecture** approach t
    }
    ```
 
-3. Build and Run the project:
+3. Apply database migrations:
+   ```bash
+   dotnet tool install -g dotnet-ef
+   dotnet ef database update --project src/PromptHub.Infrastructure --startup-project src/PromptHub.Api
+   ```
+
+4. Build and Run the project:
    ```bash
    dotnet build
    cd src/PromptHub.Api
    dotnet run
    ```
 
-4. Navigate to the local Swagger UI to safely test your endpoints:
+5. Navigate to the local Swagger UI to safely test your endpoints:
    `http://localhost:<port>/swagger`
 
 ## 🤝 Contributing
