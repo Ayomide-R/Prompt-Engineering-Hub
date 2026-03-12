@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using PromptHub.Infrastructure;
 using PromptHub.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using PromptHub.Application.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +16,30 @@ builder.Services.AddSwaggerGen();
 // Add Infrastructure layer (Database, AI, Services)
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
+// Add JWT Authentication
+var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
+if (jwtOptions != null)
+{
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
+        };
+    });
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,6 +50,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

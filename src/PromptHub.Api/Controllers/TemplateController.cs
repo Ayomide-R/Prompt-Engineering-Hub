@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using PromptHub.Application.Interfaces;
 using PromptHub.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace PromptHub.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class TemplateController : ControllerBase
 {
     private readonly IPromptTemplateService _templateService;
@@ -16,6 +19,7 @@ public class TemplateController : ControllerBase
     }
 
     [HttpGet("public")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetPublicTemplates()
     {
         var templates = await _templateService.GetPublicTemplatesAsync();
@@ -25,7 +29,9 @@ public class TemplateController : ControllerBase
     [HttpGet("my-templates")]
     public async Task<IActionResult> GetMyTemplates()
     {
-        var userId = Guid.NewGuid(); // Placeholder
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
+
         var templates = await _templateService.GetUserTemplatesAsync(userId);
         return Ok(templates);
     }
@@ -33,7 +39,10 @@ public class TemplateController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateTemplate([FromBody] PromptTemplate template)
     {
-        template.UserId = Guid.NewGuid(); // Placeholder
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
+
+        template.UserId = userId;
         var created = await _templateService.CreateTemplateAsync(template);
         return CreatedAtAction(nameof(GetTemplate), new { id = created.Id }, created);
     }

@@ -5,7 +5,9 @@ using Microsoft.SemanticKernel;
 using PromptHub.Application.Interfaces;
 using PromptHub.Application.Services;
 using PromptHub.Infrastructure.AI;
+using PromptHub.Infrastructure.Authentication;
 using PromptHub.Infrastructure.Data;
+using PromptHub.Application.Options;
 
 namespace PromptHub.Infrastructure;
 
@@ -32,7 +34,13 @@ public static class DependencyInjection
         // Domain Services
         services.AddScoped<IPromptService, PromptService>();
         services.AddScoped<IPromptTemplateService, PromptTemplateService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAiProviderService, GeminiAiProviderService>();
+
+        // Authentication Services
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
         return services;
     }
