@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Entity Framework Core Design and Tools packages.
 - Generated initial EF Core migrations for PostgreSQL.
 - Updated documentation with database migration instructions.
+- Implemented JWT Bearer Authentication middleware and secured endpoints.
+- Added `AuthController` for user registration and login endpoints.
+- Created Auth-related Request and Response Data Transfer Objects (DTOs).
 
 ### Changed
 - Configured PostgreSQL database connection string in `appsettings.json`.

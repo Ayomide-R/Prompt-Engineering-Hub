@@ -16,7 +16,7 @@ This project is built using a highly decoupled **Clean Architecture** approach t
 - **Framework**: .NET 10 ASP.NET Core Web API
 - **AI Integration**: Microsoft Semantic Kernel (`Microsoft.SemanticKernel.Connectors.Google`)
 - **Database**: PostgreSQL via Entity Framework Core
-- **Authentication**: JWT (Planned)
+- **Authentication**: JWT Bearer Authentication middleware
 
 ### Project Structure
 - `PromptHub.Domain`: Core Entities (`User`, `PromptTemplate`, `GeneratedPrompt`) and business Rules.
@@ -50,6 +50,12 @@ This project is built using a highly decoupled **Clean Architecture** approach t
          "ApiKey": "YOUR_ACTUAL_GEMINI_API_KEY",
          "ModelId": "gemini-2.5-flash"
        }
+     },
+     "Jwt": {
+       "Issuer": "PromptEngineeringHubApi",
+       "Audience": "PromptEngineeringHubUsers",
+       "Secret": "A_Very_Long_Super_Secret_Key_For_Jwt_Auth_32_Chars_Min!",
+       "ExpiryMinutes": 60
      }
    }
    ```
