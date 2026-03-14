@@ -73,11 +73,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Ensure Database is created during startup for local testing
+// Apply pending migrations during startup
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.EnsureCreated(); // Creates DB if it doesn't exist, bypasses migrations for scaffolding phase
+    await context.Database.MigrateAsync();
 }
 
 app.Run();

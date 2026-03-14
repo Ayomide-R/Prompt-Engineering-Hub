@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integrated **Serilog** for structured logging and auditing.
 - Configured console and rolling file sinks with JSON formatting for logs.
 - Added audit logging to `AuthController`, `TemplateController`, and `PromptController`.
+- Transitioned from `EnsureCreated()` to **EF Core Migrations** for reliable schema versioning.
+- Automated migration application on application startup.
+- Integrated `Microsoft.EntityFrameworkCore.Design` for developer tooling support.
 
 ### Changed
 - Configured PostgreSQL database connection string in `appsettings.json`.

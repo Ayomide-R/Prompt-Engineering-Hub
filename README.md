@@ -20,7 +20,8 @@ This project is built using a highly decoupled **Clean Architecture** approach t
 - **Input Validation**: Robust validation using **FluentValidation**
 - **Global Error Handling**: Standardized RFC 7807 **ProblemDetails** responses via .NET 10 `IExceptionHandler`
 - **Unit Testing**: Comprehensive test suite using **xUnit**, **Moq**, and **FluentAssertions**
-- **Structured Logging & Auditing**: High-performance logging with **Serilog**, capturing audit trails of core user actions in JSON format.
+- **Structured Logging & Auditing**: High-performance logging with **Serilog**, capturing audit trails of core user actions.
+- **Database Migrations**: Reliable schema versioning and automatic updates using **EF Core Migrations**.
 
 ### Project Structure
 - `PromptHub.Domain`: Core Entities (`User`, `PromptTemplate`, `GeneratedPrompt`) and business Rules.
