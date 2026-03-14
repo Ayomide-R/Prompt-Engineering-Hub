@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Transitioned from `EnsureCreated()` to **EF Core Migrations** for reliable schema versioning.
 - Automated migration application on application startup.
 - Integrated `Microsoft.EntityFrameworkCore.Design` for developer tooling support.
+- Synchronized **Entity Framework Core 10.0.5** and related packages across all projects to resolve version conflicts.
+- Cleaned up build warnings, achieving a **0 Warning, 0 Error** build status.
 
 ### Changed
 - Configured PostgreSQL database connection string in `appsettings.json`.
