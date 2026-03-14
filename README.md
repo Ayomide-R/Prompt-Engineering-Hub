@@ -17,12 +17,16 @@ This project is built using a highly decoupled **Clean Architecture** approach t
 - **AI Integration**: Microsoft Semantic Kernel (`Microsoft.SemanticKernel.Connectors.Google`)
 - **Database**: PostgreSQL via Entity Framework Core
 - **Authentication**: JWT Bearer Authentication middleware
+- **Input Validation**: Robust validation using **FluentValidation**
+- **Global Error Handling**: Standardized RFC 7807 **ProblemDetails** responses via .NET 10 `IExceptionHandler`
+- **Unit Testing**: Comprehensive test suite using **xUnit**, **Moq**, and **FluentAssertions**
 
 ### Project Structure
 - `PromptHub.Domain`: Core Entities (`User`, `PromptTemplate`, `GeneratedPrompt`) and business Rules.
-- `PromptHub.Application`: Core abstractions, interfaces (`IApplicationDbContext`), and Business Logic Services (`PromptService`).
+- `PromptHub.Application`: Core abstractions, interfaces, Data Transfer Objects (DTOs), Validators, and Business Logic Services.
 - `PromptHub.Infrastructure`: Implementation details including the EF Core `ApplicationDbContext` and Semantic Kernel integrations.
-- `PromptHub.Api`: RESTful endpoints, middleware, and Dependency Injection configurations.
+- `PromptHub.Api`: RESTful endpoints, Global Exception Handling, middleware, and Dependency Injection configurations.
+- `tests/PromptHub.UnitTests`: Unit tests for core services and business logic.
 
 ## 🚀 Getting Started
 
@@ -75,6 +79,12 @@ This project is built using a highly decoupled **Clean Architecture** approach t
 
 5. Navigate to the local Swagger UI to safely test your endpoints:
    `http://localhost:<port>/swagger`
+
+### Running Tests
+To execute the unit test suite, run:
+```bash
+dotnet test
+```
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome!
