@@ -3,6 +3,8 @@ using PromptHub.Application.Interfaces;
 using PromptHub.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using PromptHub.Application.DTOs.Templates;
+using FluentValidation;
 
 namespace PromptHub.Api.Controllers;
 
@@ -12,10 +14,12 @@ namespace PromptHub.Api.Controllers;
 public class TemplateController : ControllerBase
 {
     private readonly IPromptTemplateService _templateService;
+    private readonly IValidator<CreateTemplateRequest> _createValidator;
 
-    public TemplateController(IPromptTemplateService templateService)
+    public TemplateController(IPromptTemplateService templateService, IValidator<CreateTemplateRequest> createValidator)
     {
         _templateService = templateService;
+        _createValidator = createValidator;
     }
 
     [HttpGet("public")]
@@ -23,7 +27,9 @@ public class TemplateController : ControllerBase
     public async Task<IActionResult> GetPublicTemplates()
     {
         var templates = await _templateService.GetPublicTemplatesAsync();
-        return Ok(templates);
+        var response = templates.Select(t => new TemplateResponse(
+            t.Id, t.Title, t.Description, t.Category, t.DefaultRole, t.MasterInstruction, t.RequiredVariables, t.IsPublic, t.CreatedAt, t.UserId));
+        return Ok(response);
     }
 
     [HttpGet("my-templates")]
@@ -33,18 +39,37 @@ public class TemplateController : ControllerBase
         if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
 
         var templates = await _templateService.GetUserTemplatesAsync(userId);
-        return Ok(templates);
+        var response = templates.Select(t => new TemplateResponse(
+            t.Id, t.Title, t.Description, t.Category, t.DefaultRole, t.MasterInstruction, t.RequiredVariables, t.IsPublic, t.CreatedAt, t.UserId));
+        return Ok(response);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTemplate([FromBody] PromptTemplate template)
+    public async Task<IActionResult> CreateTemplate([FromBody] CreateTemplateRequest request)
     {
+        var validationResult = await _createValidator.ValidateAsync(request);
+        if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
+
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
 
-        template.UserId = userId;
+        var template = new PromptTemplate
+        {
+            Title = request.Title,
+            Description = request.Description,
+            Category = request.Category,
+            DefaultRole = request.DefaultRole,
+            MasterInstruction = request.MasterInstruction,
+            RequiredVariables = request.RequiredVariables,
+            IsPublic = request.IsPublic,
+            UserId = userId
+        };
+
         var created = await _templateService.CreateTemplateAsync(template);
-        return CreatedAtAction(nameof(GetTemplate), new { id = created.Id }, created);
+        var response = new TemplateResponse(
+            created.Id, created.Title, created.Description, created.Category, created.DefaultRole, created.MasterInstruction, created.RequiredVariables, created.IsPublic, created.CreatedAt, created.UserId);
+        
+        return CreatedAtAction(nameof(GetTemplate), new { id = created.Id }, response);
     }
 
     [HttpGet("{id}")]
@@ -52,6 +77,10 @@ public class TemplateController : ControllerBase
     {
         var template = await _templateService.GetTemplateByIdAsync(id);
         if (template == null) return NotFound();
-        return Ok(template);
+
+        var response = new TemplateResponse(
+            template.Id, template.Title, template.Description, template.Category, template.DefaultRole, template.MasterInstruction, template.RequiredVariables, template.IsPublic, template.CreatedAt, template.UserId);
+        
+        return Ok(response);
     }
 }

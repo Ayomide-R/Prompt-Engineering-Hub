@@ -4,6 +4,7 @@ using PromptHub.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using PromptHub.Application;
 using PromptHub.Application.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,9 @@ builder.Services.AddSwaggerGen();
 
 // Add Infrastructure layer (Database, AI, Services)
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+// Add Application layer services
+builder.Services.AddApplicationServices();
 
 // Add JWT Authentication
 var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
