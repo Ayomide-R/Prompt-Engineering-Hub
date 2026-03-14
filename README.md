@@ -7,6 +7,8 @@ Welcome to the **Prompt Engineering Hub**! This application serves as an intelli
 - **Dynamic Role Selection**: Choose AI roles such as `SeniorDeveloper`, `CreativeWriter`, or `LegalExpert` to tailor the output's tone and expertise.
 - **Iterative Meta-Prompt Generation**: The system evaluates your raw idea and uses a "Master Prompt" to output a highly structured formulation containing Context, Task, Constraints, and Output Formats.
 - **Template Management**: Create, customize, and invoke stored Prompt Templates to eliminate repetitive typing.
+- **Search & Discovery**: Find the best templates with keyword search and category filtering.
+- **Prompt History with Pagination**: Efficiently browse your history with paginated results.
 - **Integration with Google Gemini**: Out-of-the-box integration powered by **Microsoft Semantic Kernel**.
 
 ## 🏗️ Architecture Stack
@@ -19,9 +21,10 @@ This project is built using a highly decoupled **Clean Architecture** approach t
 - **Authentication**: JWT Bearer Authentication middleware
 - **Input Validation**: Robust validation using **FluentValidation**
 - **Global Error Handling**: Standardized RFC 7807 **ProblemDetails** responses via .NET 10 `IExceptionHandler`
-- **Unit Testing**: Comprehensive test suite using **xUnit**, **Moq**, and **FluentAssertions**
-- **Structured Logging & Auditing**: High-performance logging with **Serilog**, capturing audit trails of core user actions.
-- **Database Migrations**: Reliable schema versioning and automatic updates using **EF Core Migrations**.
+- **Unit Testing**: Comprehensive test suite with over **13+ tests** using **xUnit**, **Moq**, and **FluentAssertions**
+- **Docker Ready**: Production-optimized `Dockerfile` and `docker-compose.yml`.
+- **API Resilience**: Built-in **Rate Limiting** policy (fixed window) to protect AI resources.
+- **Observability**: **Health Checks** for application and database readiness monitoring.
 
 ### Project Structure
 - `PromptHub.Domain`: Core Entities (`User`, `PromptTemplate`, `GeneratedPrompt`) and business Rules.
@@ -34,10 +37,22 @@ This project is built using a highly decoupled **Clean Architecture** approach t
 
 ### Prerequisites
 - .NET 10 SDK
-- PostgreSQL Server
+- Docker & Docker Compose (Recommended)
+- OR Local PostgreSQL Server
 - A valid Google Gemini API Key
 
-### Installation
+### Installation & Run (via Docker Compose)
+
+The easiest way to get started is using Docker:
+
+1. Clone the repository and set your Gemini API Key in `docker-compose.yml` or your environment variables.
+2. Run the stack:
+   ```bash
+   docker-compose up --build
+   ```
+3. The API will be available at `http://localhost:8080` and Swagger UI at `http://localhost:8080/swagger`.
+
+### Local Installation (Without Docker)
 
 1. Clone the repository:
    ```bash
@@ -45,26 +60,7 @@ This project is built using a highly decoupled **Clean Architecture** approach t
    cd Prompt-Engineering-Hub
    ```
 
-2. Update `appsettings.json` in `src/PromptHub.Api` with your credentials:
-   ```json
-   {
-     "ConnectionStrings": {
-       "DefaultConnection": "Host=localhost;Database=PromptHubDb;Username=postgres;Password=your_password"
-     },
-     "AIProvider": {
-       "Gemini": {
-         "ApiKey": "YOUR_ACTUAL_GEMINI_API_KEY",
-         "ModelId": "gemini-2.5-flash"
-       }
-     },
-     "Jwt": {
-       "Issuer": "PromptEngineeringHubApi",
-       "Audience": "PromptEngineeringHubUsers",
-       "Secret": "A_Very_Long_Super_Secret_Key_For_Jwt_Auth_32_Chars_Min!",
-       "ExpiryMinutes": 60
-     }
-   }
-   ```
+2. Update `appsettings.json` in `src/PromptHub.Api` with your credentials.
 
 3. Apply database migrations:
    ```bash
@@ -72,15 +68,15 @@ This project is built using a highly decoupled **Clean Architecture** approach t
    dotnet ef database update --project src/PromptHub.Infrastructure --startup-project src/PromptHub.Api
    ```
 
-4. Build and Run the project:
+4. Build and Run:
    ```bash
-   dotnet build
-   cd src/PromptHub.Api
-   dotnet run
+   dotnet run --project src/PromptHub.Api
    ```
 
-5. Navigate to the local Swagger UI to safely test your endpoints:
-   `http://localhost:<port>/swagger`
+### 🩺 Monitoring & Documentation
+
+- **Health Checks**: Access `/health` to verify system readiness.
+- **API Docs**: Swagger UI is enhanced with XML comments for better parameter and response descriptions.
 
 ### Running Tests
 To execute the unit test suite, run:
