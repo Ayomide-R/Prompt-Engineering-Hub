@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduced DTOs for `PromptTemplate` and `GeneratedPrompt` to decouple the API from the Domain layer.
 - Integrated `FluentValidation` for robust input validation across all API endpoints.
 - Secured `PromptController` with `[Authorize]` and removed placeholder GUIDs.
+- Implemented a Global Exception Handler using the .NET 10 `IExceptionHandler` interface for standardized `ProblemDetails` responses.
+- Refactored controllers to remove redundant try-catch blocks, relying on the global handler.
 
 ### Changed
 - Configured PostgreSQL database connection string in `appsettings.json`.

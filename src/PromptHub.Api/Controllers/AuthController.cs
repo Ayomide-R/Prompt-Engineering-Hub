@@ -26,15 +26,8 @@ public class AuthController : ControllerBase
         var validationResult = await _registerValidator.ValidateAsync(request);
         if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
-        try
-        {
-            var token = await _authService.RegisterAsync(request.Username, request.Email, request.Password);
-            return Ok(new AuthResponse(token));
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        var token = await _authService.RegisterAsync(request.Username, request.Email, request.Password);
+        return Ok(new AuthResponse(token));
     }
 
     [HttpPost("login")]
@@ -43,14 +36,7 @@ public class AuthController : ControllerBase
         var validationResult = await _loginValidator.ValidateAsync(request);
         if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
-        try
-        {
-            var token = await _authService.LoginAsync(request.Email, request.Password);
-            return Ok(new AuthResponse(token));
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(new { error = ex.Message });
-        }
+        var token = await _authService.LoginAsync(request.Email, request.Password);
+        return Ok(new AuthResponse(token));
     }
 }
