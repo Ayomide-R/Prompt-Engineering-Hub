@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Added Entity Framework Core Design and Tools packages.
-- Generated initial EF Core migrations for PostgreSQL.
+- Implemented **Entity Framework Core Migrations** for schema management.
+- Added **Update** and **Delete** endpoints for Prompt Templates with ownership validation.
+- Enhanced Audit Logging for template modification and deletion.
+- Implemented **Structured Logging** with Serilog, including request logging and audit trails.
 - Updated documentation with database migration instructions.
 - Implemented JWT Bearer Authentication middleware and secured endpoints.
 - Added `AuthController` for user registration and login endpoints.

@@ -22,6 +22,15 @@ public static class MockDbSetExtensions
         mock.As<IQueryable<T>>().Setup(m => m.Expression).Returns(source.Expression);
         mock.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(source.ElementType);
         mock.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(source.GetEnumerator());
+        
+        // Mock FindAsync - this is a simplified version that works for Guid IDs
+        mock.Setup(m => m.FindAsync(It.IsAny<object[]>()))
+            .Returns<object[]>(keyValues => 
+            {
+                var id = (Guid)keyValues[0];
+                var item = source.FirstOrDefault(e => (Guid)e.GetType().GetProperty("Id")!.GetValue(e)! == id);
+                return new ValueTask<T?>(item);
+            });
 
         return mock;
     }

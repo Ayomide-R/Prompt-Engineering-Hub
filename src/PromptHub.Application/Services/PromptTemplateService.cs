@@ -40,4 +40,19 @@ public class PromptTemplateService : IPromptTemplateService
             .OrderByDescending(t => t.CreatedAt)
             .ToListAsync();
     }
+
+    public async Task<bool> UpdateTemplateAsync(PromptTemplate template)
+    {
+        _context.PromptTemplates.Update(template);
+        return await _context.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> DeleteTemplateAsync(Guid id)
+    {
+        var template = await _context.PromptTemplates.FindAsync(id);
+        if (template == null) return false;
+
+        _context.PromptTemplates.Remove(template);
+        return await _context.SaveChangesAsync() > 0;
+    }
 }
