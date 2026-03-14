@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored controllers to remove redundant try-catch blocks, relying on the global handler.
 - Setup a comprehensive testing infrastructure using `xUnit`, `Moq`, and `FluentAssertions`.
 - Implemented unit tests for `AuthService` and `PromptService` with a custom `MockDbSet` helper for EF Core 10.
+- Integrated **Serilog** for structured logging and auditing.
+- Configured console and rolling file sinks with JSON formatting for logs.
+- Added audit logging to `AuthController`, `TemplateController`, and `PromptController`.
 
 ### Changed
 - Configured PostgreSQL database connection string in `appsettings.json`.

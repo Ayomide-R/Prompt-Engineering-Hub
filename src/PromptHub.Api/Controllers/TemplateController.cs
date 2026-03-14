@@ -15,11 +15,16 @@ public class TemplateController : ControllerBase
 {
     private readonly IPromptTemplateService _templateService;
     private readonly IValidator<CreateTemplateRequest> _createValidator;
+    private readonly ILogger<TemplateController> _logger;
 
-    public TemplateController(IPromptTemplateService templateService, IValidator<CreateTemplateRequest> createValidator)
+    public TemplateController(
+        IPromptTemplateService templateService, 
+        IValidator<CreateTemplateRequest> createValidator,
+        ILogger<TemplateController> logger)
     {
         _templateService = templateService;
         _createValidator = createValidator;
+        _logger = logger;
     }
 
     [HttpGet("public")]
@@ -66,6 +71,9 @@ public class TemplateController : ControllerBase
         };
 
         var created = await _templateService.CreateTemplateAsync(template);
+        
+        _logger.LogInformation("Template created: {TemplateTitle} by User {UserId}", created.Title, userId);
+
         var response = new TemplateResponse(
             created.Id, created.Title, created.Description, created.Category, created.DefaultRole, created.MasterInstruction, created.RequiredVariables, created.IsPublic, created.CreatedAt, created.UserId);
         

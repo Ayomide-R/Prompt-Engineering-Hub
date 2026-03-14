@@ -14,11 +14,16 @@ public class PromptController : ControllerBase
 {
     private readonly IPromptService _promptService;
     private readonly IValidator<ExpandPromptRequest> _expandValidator;
+    private readonly ILogger<PromptController> _logger;
 
-    public PromptController(IPromptService promptService, IValidator<ExpandPromptRequest> expandValidator)
+    public PromptController(
+        IPromptService promptService, 
+        IValidator<ExpandPromptRequest> expandValidator,
+        ILogger<PromptController> logger)
     {
         _promptService = promptService;
         _expandValidator = expandValidator;
+        _logger = logger;
     }
 
     [HttpPost("expand")]
@@ -32,6 +37,8 @@ public class PromptController : ControllerBase
         
         var generatedPrompt = await _promptService.ExpandPromptAsync(request.OriginalInput, request.TemplateId, userId);
         
+        _logger.LogInformation("Prompt expanded for User {UserId} using Template {TemplateId}", userId, request.TemplateId ?? Guid.Empty);
+
         var response = new PromptResponse(
             generatedPrompt.Id, 
             generatedPrompt.OriginalInput, 

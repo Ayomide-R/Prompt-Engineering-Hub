@@ -12,12 +12,18 @@ public class AuthController : ControllerBase
     private readonly IAuthService _authService;
     private readonly IValidator<RegisterRequest> _registerValidator;
     private readonly IValidator<LoginRequest> _loginValidator;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IAuthService authService, IValidator<RegisterRequest> registerValidator, IValidator<LoginRequest> loginValidator)
+    public AuthController(
+        IAuthService authService, 
+        IValidator<RegisterRequest> registerValidator, 
+        IValidator<LoginRequest> loginValidator,
+        ILogger<AuthController> logger)
     {
         _authService = authService;
         _registerValidator = registerValidator;
         _loginValidator = loginValidator;
+        _logger = logger;
     }
 
     [HttpPost("register")]
@@ -27,6 +33,9 @@ public class AuthController : ControllerBase
         if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
         var token = await _authService.RegisterAsync(request.Username, request.Email, request.Password);
+        
+        _logger.LogInformation("User registered: {Username} ({Email})", request.Username, request.Email);
+
         return Ok(new AuthResponse(token));
     }
 
@@ -37,6 +46,9 @@ public class AuthController : ControllerBase
         if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
         var token = await _authService.LoginAsync(request.Email, request.Password);
+        
+        _logger.LogInformation("User logged in: {Email}", request.Email);
+
         return Ok(new AuthResponse(token));
     }
 }
