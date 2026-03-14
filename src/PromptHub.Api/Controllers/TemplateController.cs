@@ -11,6 +11,7 @@ namespace PromptHub.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("fixed")]
 public class TemplateController : ControllerBase
 {
     private readonly IPromptTemplateService _templateService;

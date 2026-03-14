@@ -10,6 +10,7 @@ namespace PromptHub.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("fixed")]
 public class PromptController : ControllerBase
 {
     private readonly IPromptService _promptService;

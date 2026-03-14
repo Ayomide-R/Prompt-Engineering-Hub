@@ -1,0 +1,31 @@
+services:
+  prompthub-db:
+    image: postgres:17
+    container_name: prompthub-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-optimumAR@05?}
+      POSTGRES_DB: PromptHubDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - prompthub-db-data:/var/lib/postgresql/data
+
+  prompthub-api:
+    build:
+      context: .
+      dockerfile: src/PromptHub.Api/Dockerfile
+    container_name: prompthub-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=prompthub-db;Port=5432;Database=PromptHubDb;Username=postgres;Password=${POSTGRES_PASSWORD:-optimumAR@05?}
+      - Jwt__Secret=${JWT_KEY:-YourSuperSecretKeyForJWTSigning123!}
+      - Jwt__Issuer=PromptHub
+      - Jwt__Audience=PromptHubUsers
+    depends_on:
+      - prompthub-db
+
+volumes:
+  prompthub-db-data:
