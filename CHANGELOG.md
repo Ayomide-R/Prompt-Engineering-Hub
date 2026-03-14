@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Secured `PromptController` with `[Authorize]` and removed placeholder GUIDs.
 - Implemented a Global Exception Handler using the .NET 10 `IExceptionHandler` interface for standardized `ProblemDetails` responses.
 - Refactored controllers to remove redundant try-catch blocks, relying on the global handler.
+- Setup a comprehensive testing infrastructure using `xUnit`, `Moq`, and `FluentAssertions`.
+- Implemented unit tests for `AuthService` and `PromptService` with a custom `MockDbSet` helper for EF Core 10.
 
 ### Changed
 - Configured PostgreSQL database connection string in `appsettings.json`.

@@ -5,4 +5,7 @@
     <Project Path="src/PromptHub.Domain/PromptHub.Domain.csproj" />
     <Project Path="src/PromptHub.Infrastructure/PromptHub.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PromptHub.UnitTests/PromptHub.UnitTests.csproj" />
+  </Folder>
 </Solution>
