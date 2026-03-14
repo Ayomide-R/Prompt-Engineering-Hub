@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented JWT Bearer Authentication middleware and secured endpoints.
 - Added `AuthController` for user registration and login endpoints.
 - Created Auth-related Request and Response Data Transfer Objects (DTOs).
+- Introduced DTOs for `PromptTemplate` and `GeneratedPrompt` to decouple the API from the Domain layer.
+- Integrated `FluentValidation` for robust input validation across all API endpoints.
+- Secured `PromptController` with `[Authorize]` and removed placeholder GUIDs.
 
 ### Changed
 - Configured PostgreSQL database connection string in `appsettings.json`.
