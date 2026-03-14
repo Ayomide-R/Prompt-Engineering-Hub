@@ -55,4 +55,28 @@ public class PromptTemplateService : IPromptTemplateService
         _context.PromptTemplates.Remove(template);
         return await _context.SaveChangesAsync() > 0;
     }
+
+    public async Task<IEnumerable<PromptTemplate>> SearchTemplatesAsync(string? searchTerm, string? category)
+    {
+        var query = _context.PromptTemplates
+            .Where(t => t.IsPublic)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.ToLower();
+            query = query.Where(t => 
+                t.Title.ToLower().Contains(term) || 
+                t.Description.ToLower().Contains(term));
+        }
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            query = query.Where(t => t.Category == category);
+        }
+
+        return await query
+            .OrderByDescending(t => t.CreatedAt)
+            .ToListAsync();
+    }
 }

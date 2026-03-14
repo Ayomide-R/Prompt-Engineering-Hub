@@ -32,9 +32,19 @@ public class TemplateController : ControllerBase
 
     [HttpGet("public")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetPublicTemplates()
+    public async Task<IActionResult> GetPublicTemplates([FromQuery] string? searchTerm, [FromQuery] string? category)
     {
-        var templates = await _templateService.GetPublicTemplatesAsync();
+        IEnumerable<PromptTemplate> templates;
+        
+        if (!string.IsNullOrWhiteSpace(searchTerm) || !string.IsNullOrWhiteSpace(category))
+        {
+            templates = await _templateService.SearchTemplatesAsync(searchTerm, category);
+        }
+        else
+        {
+            templates = await _templateService.GetPublicTemplatesAsync();
+        }
+
         var response = templates.Select(t => new TemplateResponse(
             t.Id, t.Title, t.Description, t.Category, t.DefaultRole, t.MasterInstruction, t.RequiredVariables, t.IsPublic, t.CreatedAt, t.UserId));
         return Ok(response);

@@ -71,4 +71,44 @@ public class PromptTemplateServiceTests
         result.Should().BeFalse();
         _contextMock.Verify(x => x.SaveChangesAsync(default), Times.Never);
     }
+
+    [Fact]
+    public async Task SearchTemplatesAsync_ShouldFilterBySearchTerm_InTitleAndDescription()
+    {
+        // Arrange
+        var templates = new List<PromptTemplate>
+        {
+            new PromptTemplate { Id = Guid.NewGuid(), Title = "Expert C#", Description = "Desc", IsPublic = true },
+            new PromptTemplate { Id = Guid.NewGuid(), Title = "Title", Description = "Expert Java", IsPublic = true },
+            new PromptTemplate { Id = Guid.NewGuid(), Title = "Other", Description = "Other", IsPublic = true }
+        }.AsQueryable();
+
+        _contextMock.Setup(x => x.PromptTemplates).Returns(templates.BuildMockDbSet().Object);
+
+        // Act
+        var result = await _service.SearchTemplatesAsync("expert", null);
+
+        // Assert
+        result.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task SearchTemplatesAsync_ShouldFilterByCategory()
+    {
+        // Arrange
+        var templates = new List<PromptTemplate>
+        {
+            new PromptTemplate { Id = Guid.NewGuid(), Title = "T1", Category = "Coding", IsPublic = true },
+            new PromptTemplate { Id = Guid.NewGuid(), Title = "T2", Category = "Writing", IsPublic = true }
+        }.AsQueryable();
+
+        _contextMock.Setup(x => x.PromptTemplates).Returns(templates.BuildMockDbSet().Object);
+
+        // Act
+        var result = await _service.SearchTemplatesAsync(null, "Coding");
+
+        // Assert
+        result.Should().HaveCount(1);
+        result.First().Category.Should().Be("Coding");
+    }
 }

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Implemented **Entity Framework Core Migrations** for schema management.
+- Added **Search & Filter** capabilities for Public Templates (filter by keyword and category).
 - Added **Update** and **Delete** endpoints for Prompt Templates with ownership validation.
 - Enhanced Audit Logging for template modification and deletion.
 - Implemented **Structured Logging** with Serilog, including request logging and audit trails.
