@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PromptHub.Application.DTOs.Common;
 using PromptHub.Application.Interfaces;
 using PromptHub.Domain.Entities;
 
@@ -54,12 +55,19 @@ public class PromptService : IPromptService
         return await _context.GeneratedPrompts.FindAsync(id);
     }
 
-    public async Task<IEnumerable<GeneratedPrompt>> GetUserPromptsAsync(Guid userId)
+    public async Task<PagedResponse<GeneratedPrompt>> GetUserPromptsAsync(Guid userId, int pageNumber, int pageSize)
     {
-        return await _context.GeneratedPrompts
+        var query = _context.GeneratedPrompts
             .Where(gp => gp.UserId == userId)
-            .OrderByDescending(gp => gp.GeneratedAt)
+            .OrderByDescending(gp => gp.GeneratedAt);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResponse<GeneratedPrompt>(items, totalCount, pageNumber, pageSize);
     }
 
     public async Task SavePromptAsync(Guid promptId)

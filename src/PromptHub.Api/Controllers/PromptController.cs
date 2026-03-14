@@ -52,14 +52,18 @@ public class PromptController : ControllerBase
     }
 
     [HttpGet("history")]
-    public async Task<IActionResult> GetMyPrompts()
+    public async Task<IActionResult> GetMyPrompts([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
 
-        var prompts = await _promptService.GetUserPromptsAsync(userId);
-        var response = prompts.Select(p => new PromptResponse(
+        var pagedPrompts = await _promptService.GetUserPromptsAsync(userId, pageNumber, pageSize);
+        
+        var dtos = pagedPrompts.Items.Select(p => new PromptResponse(
             p.Id, p.OriginalInput, p.FinalPrompt, p.UsedRole, p.GeneratedAt, p.IsSaved, p.PromptTemplateId));
+            
+        var response = new PromptHub.Application.DTOs.Common.PagedResponse<PromptResponse>(
+            dtos, pagedPrompts.TotalCount, pagedPrompts.PageNumber, pagedPrompts.PageSize);
             
         return Ok(response);
     }

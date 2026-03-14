@@ -1,3 +1,4 @@
+using PromptHub.Application.DTOs.Common;
 using PromptHub.Domain.Entities;
 
 namespace PromptHub.Application.Interfaces;
@@ -5,7 +6,7 @@ namespace PromptHub.Application.Interfaces;
 public interface IPromptService
 {
     Task<GeneratedPrompt> ExpandPromptAsync(string originalInput, Guid? templateId, Guid userId);
-    Task<IEnumerable<GeneratedPrompt>> GetUserPromptsAsync(Guid userId);
+    Task<PagedResponse<GeneratedPrompt>> GetUserPromptsAsync(Guid userId, int pageNumber, int pageSize);
     Task<GeneratedPrompt?> GetPromptByIdAsync(Guid id);
     Task SavePromptAsync(Guid promptId);
 }

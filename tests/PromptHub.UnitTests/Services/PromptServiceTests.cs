@@ -82,4 +82,29 @@ public class PromptServiceTests
         result.UsedRole.Should().Be(RoleType.CreativeWriter);
         result.FinalPrompt.Should().Be("Creative result");
     }
+
+    [Fact]
+    public async Task GetUserPromptsAsync_ShouldReturnPaginatedResult()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var prompts = new List<GeneratedPrompt>
+        {
+            new GeneratedPrompt { Id = Guid.NewGuid(), UserId = userId, GeneratedAt = DateTime.UtcNow.AddMinutes(-10) },
+            new GeneratedPrompt { Id = Guid.NewGuid(), UserId = userId, GeneratedAt = DateTime.UtcNow.AddMinutes(-5) },
+            new GeneratedPrompt { Id = Guid.NewGuid(), UserId = userId, GeneratedAt = DateTime.UtcNow }
+        }.AsQueryable();
+
+        _contextMock.Setup(c => c.GeneratedPrompts).Returns(prompts.BuildMockDbSet().Object);
+
+        // Act
+        var result = await _promptService.GetUserPromptsAsync(userId, pageNumber: 1, pageSize: 2);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Items.Should().HaveCount(2);
+        result.TotalCount.Should().Be(3);
+        result.TotalPages.Should().Be(2);
+        result.HasNextPage.Should().BeTrue();
+    }
 }
