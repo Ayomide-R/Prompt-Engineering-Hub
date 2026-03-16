@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Multi-Model Support**: Integrated **OpenAI GPT** alongside Google Gemini using Semantic Kernel.
+- **Dynamic Provider Selection**: Users can now specify their preferred AI model in expansion requests.
+- **Unified AI Infrastructure**: Refactored services to support a model-agnostic architecture.
+- **NuGet Sync**: Resolved package version conflicts for .NET 10 compatibility.
 - Implemented **Entity Framework Core Migrations** for schema management.
 - Added **Pagination** for User Prompt History (TotalCount, TotalPages, PageNumber).
 - Added **Search & Filter** capabilities for Public Templates (filter by keyword and category).
