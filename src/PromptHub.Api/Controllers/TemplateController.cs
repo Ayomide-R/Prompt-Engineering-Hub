@@ -3,6 +3,7 @@ using PromptHub.Application.Interfaces;
 using PromptHub.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using PromptHub.Domain.Enums;
 using PromptHub.Application.DTOs.Templates;
 using FluentValidation;
 
@@ -68,9 +69,15 @@ public class TemplateController : ControllerBase
     {
         var validationResult = await _createValidator.ValidateAsync(request);
         if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
-
-        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
+
+        // RBAC: Only admins can create public templates
+        if (request.IsPublic && !User.IsInRole(UserRole.Admin.ToString()))
+        {
+            return Forbid();
+        }
 
         var template = new PromptTemplate
         {
@@ -92,6 +99,43 @@ public class TemplateController : ControllerBase
             created.Id, created.Title, created.Description, created.Category, created.DefaultRole, created.MasterInstruction, created.RequiredVariables, created.IsPublic, created.CreatedAt, created.UserId);
         
         return CreatedAtAction(nameof(GetTemplate), new { id = created.Id }, response);
+    }
+
+    [HttpPost("{id}/save")]
+    public async Task<IActionResult> SaveTemplate(Guid id)
+    {
+        // Placeholder for future logic
+        return Ok();
+    }
+
+    [HttpGet("{id}/versions")]
+    public async Task<IActionResult> GetVersions(Guid id)
+    {
+        var versions = await _templateService.GetTemplateVersionsAsync(id);
+        var response = versions.Select(v => new TemplateVersionResponse(
+            v.Id, v.VersionNumber, v.Title, v.Description, v.Category, v.DefaultRole, v.MasterInstruction, v.RequiredVariables, v.CreatedAt));
+            
+        return Ok(response);
+    }
+
+    [HttpPost("{id}/revert/{versionNumber}")]
+    public async Task<IActionResult> Revert(Guid id, int versionNumber)
+    {
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
+
+        var template = await _templateService.GetTemplateByIdAsync(id);
+        if (template == null) return NotFound();
+
+        if (template.UserId != userId && !User.IsInRole(UserRole.Admin.ToString()))
+        {
+            return Forbid();
+        }
+
+        var success = await _templateService.RevertToVersionAsync(id, versionNumber);
+        if (!success) return BadRequest("Revert failed.");
+
+        return Ok();
     }
 
     [HttpGet("{id}")]
@@ -118,9 +162,16 @@ public class TemplateController : ControllerBase
         var template = await _templateService.GetTemplateByIdAsync(id);
         if (template == null) return NotFound();
 
-        if (template.UserId != userId)
+        // RBAC: Must be owner or Admin to update
+        if (template.UserId != userId && !User.IsInRole(UserRole.Admin.ToString()))
         {
-            _logger.LogWarning("User {UserId} attempted to update template {TemplateId} owned by {OwnerId}", userId, id, template.UserId);
+            _logger.LogWarning("User {UserId} attempted to update template {TemplateId} without permission", userId, id);
+            return Forbid();
+        }
+
+        // RBAC: Only admins can change a template to public
+        if (request.IsPublic && !template.IsPublic && !User.IsInRole(UserRole.Admin.ToString()))
+        {
             return Forbid();
         }
 
@@ -149,9 +200,10 @@ public class TemplateController : ControllerBase
         var template = await _templateService.GetTemplateByIdAsync(id);
         if (template == null) return NotFound();
 
-        if (template.UserId != userId)
+        // RBAC: Must be owner or Admin to delete
+        if (template.UserId != userId && !User.IsInRole(UserRole.Admin.ToString()))
         {
-            _logger.LogWarning("User {UserId} attempted to delete template {TemplateId} owned by {OwnerId}", userId, id, template.UserId);
+            _logger.LogWarning("User {UserId} attempted to delete template {TemplateId} without permission", userId, id);
             return Forbid();
         }
 

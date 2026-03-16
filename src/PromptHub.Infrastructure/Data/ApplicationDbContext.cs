@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<PromptTemplate> PromptTemplates { get; set; } = null!;
     public DbSet<GeneratedPrompt> GeneratedPrompts { get; set; } = null!;
+    public DbSet<PromptTemplateVersion> PromptTemplateVersions { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +29,12 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             .HasOne(pt => pt.User)
             .WithMany(u => u.Templates)
             .HasForeignKey(pt => pt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<PromptTemplateVersion>()
+            .HasOne(v => v.PromptTemplate)
+            .WithMany(pt => pt.Versions)
+            .HasForeignKey(v => v.PromptTemplateId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<GeneratedPrompt>()

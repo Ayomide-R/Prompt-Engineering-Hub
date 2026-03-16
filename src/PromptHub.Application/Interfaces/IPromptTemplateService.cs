@@ -11,4 +11,6 @@ public interface IPromptTemplateService
     Task<bool> UpdateTemplateAsync(PromptTemplate template);
     Task<bool> DeleteTemplateAsync(Guid id);
     Task<IEnumerable<PromptTemplate>> SearchTemplatesAsync(string? searchTerm, string? category);
+    Task<IEnumerable<PromptTemplateVersion>> GetTemplateVersionsAsync(Guid templateId);
+    Task<bool> RevertToVersionAsync(Guid templateId, int versionNumber);
 }

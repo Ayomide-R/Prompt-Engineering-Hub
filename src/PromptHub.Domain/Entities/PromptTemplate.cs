@@ -26,4 +26,5 @@ public class PromptTemplate
     public User? User { get; set; }
     
     public ICollection<GeneratedPrompt> GeneratedPrompts { get; set; } = new List<GeneratedPrompt>();
+    public ICollection<PromptTemplateVersion> Versions { get; set; } = new List<PromptTemplateVersion>();
 }

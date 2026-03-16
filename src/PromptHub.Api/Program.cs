@@ -10,6 +10,7 @@ using PromptHub.Api.Infrastructure;
 using Serilog;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using PromptHub.Domain.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +80,12 @@ if (jwtOptions != null)
             ValidAudience = jwtOptions.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
         };
+    });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("AdminOnly", policy => policy.RequireRole(UserRole.Admin.ToString()));
+        options.AddPolicy("UserOnly", policy => policy.RequireRole(UserRole.User.ToString()));
     });
 }
 

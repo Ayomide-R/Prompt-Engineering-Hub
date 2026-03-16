@@ -1,3 +1,5 @@
+using PromptHub.Domain.Enums;
+
 namespace PromptHub.Domain.Entities;
 
 public class User
@@ -7,6 +9,7 @@ public class User
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public UserRole Role { get; set; } = UserRole.User;
     
     // Navigation properties
     public ICollection<PromptTemplate> Templates { get; set; } = new List<PromptTemplate>();

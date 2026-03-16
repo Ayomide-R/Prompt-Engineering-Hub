@@ -30,4 +30,15 @@ public record TemplateResponse(
     string RequiredVariables, 
     bool IsPublic, 
     DateTime CreatedAt, 
-    Guid UserId);
+    Guid? TemplateId);
+
+public record TemplateVersionResponse(
+    Guid Id,
+    int VersionNumber,
+    string Title,
+    string Description,
+    string Category,
+    RoleType DefaultRole,
+    string MasterInstruction,
+    string RequiredVariables,
+    DateTime CreatedAt);
