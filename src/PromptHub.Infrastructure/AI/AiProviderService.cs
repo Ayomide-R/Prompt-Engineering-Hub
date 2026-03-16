@@ -4,16 +4,16 @@ using PromptHub.Domain.Enums;
 
 namespace PromptHub.Infrastructure.AI;
 
-public class GeminiAiProviderService : IAiProviderService
+public class AiProviderService : IAiProviderService
 {
     private readonly Kernel _kernel;
 
-    public GeminiAiProviderService(Kernel kernel)
+    public AiProviderService(Kernel kernel)
     {
         _kernel = kernel;
     }
 
-    public async Task<string> GenerateExpandedPromptAsync(string rawInput, RoleType role, string masterInstruction, Dictionary<string, string>? variables = null)
+    public async Task<string> GenerateExpandedPromptAsync(string rawInput, RoleType role, string masterInstruction, string? provider = null, Dictionary<string, string>? variables = null)
     {
         // Construct the meta-prompt dynamically.
         var promptText = $@"
@@ -33,8 +33,12 @@ Here is the user's raw input task:
         
         promptText += "\n\nPlease output ONLY the structured prompt, ready to be copied and pasted by the user into another LLM.";
 
-        // Execute via Semantic Kernel
-        var result = await _kernel.InvokePromptAsync(promptText);
+        // Execute via Semantic Kernel with specific Service ID if provided
+        var executionSettings = !string.IsNullOrEmpty(provider) 
+            ? new PromptExecutionSettings { ServiceId = provider } 
+            : null;
+
+        var result = await _kernel.InvokePromptAsync(promptText, new KernelArguments(executionSettings));
         
         return result.ToString();
     }

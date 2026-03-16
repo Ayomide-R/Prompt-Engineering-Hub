@@ -2,7 +2,7 @@ using PromptHub.Domain.Enums;
 
 namespace PromptHub.Application.DTOs.Prompts;
 
-public record ExpandPromptRequest(string OriginalInput, Guid? TemplateId);
+public record ExpandPromptRequest(string OriginalInput, Guid? TemplateId, string? Provider = null);
 
 public record PromptResponse(
     Guid Id, 

@@ -4,19 +4,18 @@ Welcome to the **Prompt Engineering Hub**! This application serves as an intelli
 
 ## 🌟 Features
 
-- **Dynamic Role Selection**: Choose AI roles such as `SeniorDeveloper`, `CreativeWriter`, or `LegalExpert` to tailor the output's tone and expertise.
-- **Iterative Meta-Prompt Generation**: The system evaluates your raw idea and uses a "Master Prompt" to output a highly structured formulation containing Context, Task, Constraints, and Output Formats.
-- **Template Management**: Create, customize, and invoke stored Prompt Templates to eliminate repetitive typing.
-- **Search & Discovery**: Find the best templates with keyword search and category filtering.
-- **Prompt History with Pagination**: Efficiently browse your history with paginated results.
-- **Integration with Google Gemini**: Out-of-the-box integration powered by **Microsoft Semantic Kernel**.
+- **Multi-Model Support**: Dynamically switch between **Google Gemini** and **OpenAI GPT** models via the API.
+- **Integration with Microsoft Semantic Kernel**: Leverages the latest connectors for seamless AI provider orchestration.
+- **Role-Based Prompt Engineering**: Configure specialized personas (e.g., `SeniorDeveloper`, `LegalExpert`) to guide prompt expansion.
+- **Template Management**: Create, search, and manage robust Prompt Templates.
+- **Pagination & History**: Browse your generated prompt history with efficient metadata.
 
 ## 🏗️ Architecture Stack
 
 This project is built using a highly decoupled **Clean Architecture** approach to ensure long-term maintainability.
 
 - **Framework**: .NET 10 ASP.NET Core Web API
-- **AI Integration**: Microsoft Semantic Kernel (`Microsoft.SemanticKernel.Connectors.Google`)
+- **AI Integration**: Microsoft Semantic Kernel (`Connectors.Google`, `Connectors.OpenAI`)
 - **Database**: PostgreSQL via Entity Framework Core
 - **Authentication**: JWT Bearer Authentication middleware
 - **Input Validation**: Robust validation using **FluentValidation**
@@ -40,12 +39,13 @@ This project is built using a highly decoupled **Clean Architecture** approach t
 - Docker & Docker Compose (Recommended)
 - OR Local PostgreSQL Server
 - A valid Google Gemini API Key
+- (Optional) A valid OpenAI API Key
 
 ### Installation & Run (via Docker Compose)
 
 The easiest way to get started is using Docker:
 
-1. Clone the repository and set your Gemini API Key in `docker-compose.yml` or your environment variables.
+1. Clone the repository and set your Gemini and/or OpenAI API Keys in `docker-compose.yml` or your environment variables.
 2. Run the stack:
    ```bash
    docker-compose up --build

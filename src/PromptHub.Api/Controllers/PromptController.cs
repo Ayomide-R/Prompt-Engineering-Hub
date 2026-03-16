@@ -36,7 +36,7 @@ public class PromptController : ControllerBase
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
         
-        var generatedPrompt = await _promptService.ExpandPromptAsync(request.OriginalInput, request.TemplateId, userId);
+        var generatedPrompt = await _promptService.ExpandPromptAsync(request.OriginalInput, request.TemplateId, userId, request.Provider);
         
         _logger.LogInformation("Prompt expanded for User {UserId} using Template {TemplateId}", userId, request.TemplateId ?? Guid.Empty);
 

@@ -16,7 +16,7 @@ public class PromptService : IPromptService
         _aiProvider = aiProvider;
     }
 
-    public async Task<GeneratedPrompt> ExpandPromptAsync(string originalInput, Guid? templateId, Guid userId)
+    public async Task<GeneratedPrompt> ExpandPromptAsync(string originalInput, Guid? templateId, Guid userId, string? provider = null)
     {
         var role = Domain.Enums.RoleType.GeneralAssistant;
         var masterInstruction = "You are an expert Prompt Engineer. When I give you a task, rewrite it into a detailed, structured prompt that includes Context, Task, Constraints, and Output Format.";
@@ -32,7 +32,7 @@ public class PromptService : IPromptService
         }
 
         // Call the AI Provider to expand the prompt
-        var expandedPromptText = await _aiProvider.GenerateExpandedPromptAsync(originalInput, role, masterInstruction);
+        var expandedPromptText = await _aiProvider.GenerateExpandedPromptAsync(originalInput, role, masterInstruction, provider);
 
         var generatedPrompt = new GeneratedPrompt
         {

@@ -22,20 +22,37 @@ public static class DependencyInjection
             
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
-        // Semantic Kernel Setup for Gemini
-        var geminiApiKey = configuration["AIProvider:Gemini:ApiKey"];
-        var geminiModelId = configuration["AIProvider:Gemini:ModelId"] ?? "gemini-2.5-flash"; // Default to a standard model
-        
+        // Multi-Model Semantic Kernel Setup
+        var aiOptions = configuration.GetSection(AIProviderOptions.SectionName).Get<AIProviderOptions>() ?? new AIProviderOptions();
+        services.Configure<AIProviderOptions>(configuration.GetSection(AIProviderOptions.SectionName));
+
         var builder = Kernel.CreateBuilder();
-        builder.AddGoogleAIGeminiChatCompletion(modelId: geminiModelId, apiKey: geminiApiKey!);
-        
+
+        // Gemini Integration
+        if (!string.IsNullOrEmpty(aiOptions.Gemini.ApiKey))
+        {
+            builder.AddGoogleAIGeminiChatCompletion(
+                modelId: aiOptions.Gemini.ModelId, 
+                apiKey: aiOptions.Gemini.ApiKey,
+                serviceId: "Gemini");
+        }
+
+        // OpenAI Integration
+        if (!string.IsNullOrEmpty(aiOptions.OpenAI.ApiKey))
+        {
+            builder.AddOpenAIChatCompletion(
+                modelId: aiOptions.OpenAI.ModelId,
+                apiKey: aiOptions.OpenAI.ApiKey,
+                serviceId: "OpenAI");
+        }
+
         services.AddSingleton(builder.Build());
 
         // Domain Services
         services.AddScoped<IPromptService, PromptService>();
         services.AddScoped<IPromptTemplateService, PromptTemplateService>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IAiProviderService, GeminiAiProviderService>();
+        services.AddScoped<IAiProviderService, AiProviderService>();
 
         // Authentication Services
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
