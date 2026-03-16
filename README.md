@@ -5,6 +5,8 @@ Welcome to the **Prompt Engineering Hub**! This application serves as an intelli
 ## 🌟 Features
 
 - **Multi-Model Support**: Dynamically switch between **Google Gemini** and **OpenAI GPT** models via the API.
+- **Role-Based Access Control (RBAC)**: Fine-grained permissions with `Admin` and `User` roles.
+- **Prompt Template Versioning**: Automatically archive and revert to previous template versions.
 - **Integration with Microsoft Semantic Kernel**: Leverages the latest connectors for seamless AI provider orchestration.
 - **Role-Based Prompt Engineering**: Configure specialized personas (e.g., `SeniorDeveloper`, `LegalExpert`) to guide prompt expansion.
 - **Template Management**: Create, search, and manage robust Prompt Templates.
@@ -23,6 +25,7 @@ This project is built using a highly decoupled **Clean Architecture** approach t
 - **Unit Testing**: Comprehensive test suite with over **13+ tests** using **xUnit**, **Moq**, and **FluentAssertions**
 - **Docker Ready**: Production-optimized `Dockerfile` and `docker-compose.yml`.
 - **API Resilience**: Built-in **Rate Limiting** policy (fixed window) to protect AI resources.
+- **Audit Logging**: Admin-only access to system audit logs for key actions.
 - **Observability**: **Health Checks** for application and database readiness monitoring.
 
 ### Project Structure
