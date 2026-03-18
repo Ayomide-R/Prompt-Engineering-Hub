@@ -102,7 +102,7 @@ public class TemplateController : ControllerBase
     }
 
     [HttpPost("{id}/save")]
-    public async Task<IActionResult> SaveTemplate(Guid id)
+    public IActionResult SaveTemplate(Guid id)
     {
         // Placeholder for future logic
         return Ok();

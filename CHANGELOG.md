@@ -8,11 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Multi-Model Support**: Integrated **OpenAI GPT** alongside Google Gemini using Semantic Kernel.
+- **Multi-Model Support Completion**: Integrated **Anthropic (Claude 3)** and **Ollama (Local Llama)** support alongside Google Gemini and OpenAI.
 - **Role-Based Access Control (RBAC)**: Introduced `Admin` and `User` roles with policy-based authorization.
 - **Template Versioning**: Implemented automatic version archiving on update and revert capabilities.
 - **Audit Logs**: Added admin-only `AuditController` to monitor system activities.
-- **Dynamic Provider Selection**: Users can now specify their preferred AI model in expansion requests.
+- **Dynamic Provider Selection**: Users can now specify `"Gemini"`, `"OpenAI"`, `"Anthropic"`, or `"Ollama"` in expansion requests.
 - Implemented **Entity Framework Core Migrations** for schema management.
 - Added **Pagination** for User Prompt History (TotalCount, TotalPages, PageNumber).
 - Added **Search & Filter** capabilities for Public Templates (filter by keyword and category).

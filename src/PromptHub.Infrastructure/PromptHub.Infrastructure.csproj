@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageReference Include="Lost.SemanticKernel.Connectors.Anthropic" Version="1.25.0-alpha3" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.73.0-alpha" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.73.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />

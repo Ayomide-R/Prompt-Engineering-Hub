@@ -4,7 +4,7 @@ Welcome to the **Prompt Engineering Hub**! This application serves as an intelli
 
 ## 🌟 Features
 
-- **Multi-Model Support**: Dynamically switch between **Google Gemini** and **OpenAI GPT** models via the API.
+- **Multi-Model Support**: Dynamically switch between **Google Gemini**, **OpenAI GPT**, **Anthropic (Claude)**, and **Ollama (Llama)** models via the API.
 - **Role-Based Access Control (RBAC)**: Fine-grained permissions with `Admin` and `User` roles.
 - **Prompt Template Versioning**: Automatically archive and revert to previous template versions.
 - **Integration with Microsoft Semantic Kernel**: Leverages the latest connectors for seamless AI provider orchestration.

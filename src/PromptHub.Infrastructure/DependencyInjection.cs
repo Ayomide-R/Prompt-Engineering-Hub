@@ -1,3 +1,7 @@
+#pragma warning disable SKEXP0070 // Ollama
+#pragma warning disable SKEXP0011 // Various
+#pragma warning disable SKEXP0001 // Core
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +48,24 @@ public static class DependencyInjection
                 modelId: aiOptions.OpenAI.ModelId,
                 apiKey: aiOptions.OpenAI.ApiKey,
                 serviceId: "OpenAI");
+        }
+
+        // Anthropic Integration
+        if (!string.IsNullOrEmpty(aiOptions.Anthropic.ApiKey))
+        {
+            builder.AddAnthropicChatCompletion(
+                modelId: aiOptions.Anthropic.ModelId,
+                apiKey: aiOptions.Anthropic.ApiKey,
+                serviceId: "Anthropic");
+        }
+
+        // Ollama Integration
+        if (!string.IsNullOrEmpty(aiOptions.Ollama.Endpoint))
+        {
+            builder.AddOllamaChatCompletion(
+                modelId: aiOptions.Ollama.ModelId,
+                endpoint: new Uri(aiOptions.Ollama.Endpoint),
+                serviceId: "Ollama");
         }
 
         services.AddSingleton(builder.Build());
