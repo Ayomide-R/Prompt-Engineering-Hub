@@ -1,0 +1,52 @@
+@page "/admin/audit-logs"
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+
+<PageTitle>PromptHub - Audit Logs</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Admin: Audit Logs</MudText>
+<MudText Class="mb-8">Monitor system activity and administrative actions.</MudText>
+
+@if (_logs == null)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+else if (!_logs.Any())
+{
+    <MudAlert Severity="Severity.Info">No audit logs found.</MudAlert>
+}
+else
+{
+    <MudDataGrid Items="@_logs" Filterable="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Timestamp" Title="Time" Format="g" />
+            <PropertyColumn Property="x => x.Action" Title="Action" />
+            <PropertyColumn Property="x => x.UserEmail" Title="User" />
+            <PropertyColumn Property="x => x.Details" Title="Details" />
+        </Columns>
+    </MudDataGrid>
+}
+
+@code {
+    private List<AuditLogDto>? _logs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _logs = await Http.GetFromJsonAsync<List<AuditLogDto>>("api/Audit");
+        }
+        catch (Exception)
+        {
+            _logs = new();
+        }
+    }
+
+    public class AuditLogDto
+    {
+        public DateTime Timestamp { get; set; }
+        public string Action { get; set; } = string.Empty;
+        public string UserEmail { get; set; } = string.Empty;
+        public string Details { get; set; } = string.Empty;
+    }
+}

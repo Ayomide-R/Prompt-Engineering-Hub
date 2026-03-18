@@ -1,0 +1,137 @@
+@page "/workspace"
+@using Microsoft.AspNetCore.WebUtilities
+@inject PromptService PromptService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>PromptHub - Workspace</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Workspace</MudText>
+<MudText Class="mb-8">Customize your prompt and expand it using multiple AI providers.</MudText>
+
+<MudGrid>
+    <MudItem xs="12" md="6">
+        <MudPaper Elevation="4" Class="pa-6">
+            <MudText Typo="Typo.h5" Class="mb-4">Input</MudText>
+            
+            @if (_isLoadingTemplate)
+            {
+                <MudProgressCircular Indeterminate="true" Size="Size.Small" />
+            }
+            else
+            {
+                <MudTextField T="string" Label="Prompt Template" @bind-Value="_request.Prompt" 
+                              Lines="10" Variant="Variant.Outlined" Class="mb-4" />
+                
+                @if (_variables.Any())
+                {
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">Variables</MudText>
+                    @foreach (var variable in _variables.Keys.ToList())
+                    {
+                        <MudTextField T="string" Label="@variable" @bind-Value="_variables[variable]" 
+                                      Variant="Variant.Filled" Margin="Margin.Dense" Class="mb-2" />
+                    }
+                }
+
+                <MudSelect T="string" Label="AI Provider" @bind-Value="_request.Provider" Class="mt-4" Variant="Variant.Outlined">
+                    <MudSelectItem Value="@("Gemini")" />
+                    <MudSelectItem Value="@("OpenAI")" />
+                    <MudSelectItem Value="@("Anthropic")" />
+                    <MudSelectItem Value="@("Ollama")" />
+                </MudSelect>
+
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-6"
+                           OnClick="OnExpand" Disabled="_isExpanding">
+                    @if (_isExpanding)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Expanding...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Expand Prompt</MudText>
+                    }
+                </MudButton>
+            }
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudPaper Elevation="4" Class="pa-6 mud-theme-dark" Style="height: 100%; min-height: 400px; overflow-y: auto;">
+            <MudText Typo="Typo.h5" Class="mb-4">Expanded Output</MudText>
+            @if (string.IsNullOrEmpty(_expandedOutput))
+            {
+                <MudText Typo="Typo.body1" Class="mud-text-secondary italic">Result will appear here...</MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.body1" Style="white-space: pre-wrap;">@_expandedOutput</MudText>
+                <MudButton StartIcon="@Icons.Material.Filled.ContentCopy" Color="Color.Inherit" 
+                           Class="mt-4" OnClick="CopyToClipboard">Copy to Clipboard</MudButton>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private ExpandPromptRequest _request = new() { Provider = "Gemini" };
+    private Dictionary<string, string> _variables = new();
+    private string _expandedOutput = "";
+    private bool _isExpanding;
+    private bool _isLoadingTemplate;
+
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("templateId", out var templateIdStr))
+        {
+            if (Guid.TryParse(templateIdStr, out var templateId))
+            {
+                await LoadTemplate(templateId);
+            }
+        }
+    }
+
+    private async Task LoadTemplate(Guid id)
+    {
+        _isLoadingTemplate = true;
+        var template = await PromptService.GetTemplateByIdAsync(id);
+        if (template != null)
+        {
+            _request.Prompt = template.Content;
+            // Simple regex/logic to find variables like {{variable}}
+            DetectVariables(template.Content);
+        }
+        _isLoadingTemplate = false;
+    }
+
+    private void DetectVariables(string content)
+    {
+        _variables.Clear();
+        var matches = System.Text.RegularExpressions.Regex.Matches(content, @"\{\{(.*?)\}\}");
+        foreach (System.Text.RegularExpressions.Match match in matches)
+        {
+            var varName = match.Groups[1].Value.Trim();
+            if (!_variables.ContainsKey(varName))
+            {
+                _variables[varName] = "";
+            }
+        }
+    }
+
+    private async Task OnExpand()
+    {
+        _isExpanding = true;
+        _request.Variables = _variables;
+        _expandedOutput = await PromptService.ExpandPromptAsync(_request);
+        _isExpanding = false;
+    }
+
+    private async Task CopyToClipboard()
+    {
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _expandedOutput);
+        Snackbar.Add("Copied to clipboard!", Severity.Info);
+    }
+}

@@ -1,0 +1,36 @@
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">PromptHub.Web</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <MudNavMenu>
+        <MudNavLink href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+        <MudNavLink href="workspace" Icon="@Icons.Material.Filled.EditNote">Workspace</MudNavLink>
+        <MudNavLink href="history" Icon="@Icons.Material.Filled.History">History</MudNavLink>
+        
+        <AuthorizeView Roles="Admin">
+            <MudText Typo="Typo.overline" Class="px-4 mt-4 mud-text-secondary">Admin</MudText>
+            <MudNavLink href="admin/audit-logs" Icon="@Icons.Material.Filled.Rule">Audit Logs</MudNavLink>
+            <MudNavLink href="admin/users" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
+        </AuthorizeView>
+
+        <MudDivider Class="my-2" />
+        <MudNavLink href="about" Icon="@Icons.Material.Filled.Info">About</MudNavLink>
+    </MudNavMenu>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

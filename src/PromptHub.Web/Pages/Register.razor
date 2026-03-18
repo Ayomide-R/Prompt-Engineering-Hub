@@ -1,0 +1,59 @@
+@page "/register"
+@layout MainLayout
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+    <MudPaper Elevation="4" Class="pa-8">
+        <MudForm @ref="_form" @bind-IsValid="@_success">
+            <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Register</MudText>
+            <MudTextField T="string" Label="Username" Required="true" RequiredError="Username is required!"
+                          @bind-Value="_model.Username" FullWidth="true" Variant="Variant.Outlined" Class="mb-4" />
+            <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!"
+                          @bind-Value="_model.Email" FullWidth="true" Variant="Variant.Outlined" Class="mb-4" />
+            <MudTextField T="string" Label="Password" Required="true" RequiredError="Password is required!"
+                          @bind-Value="_model.Password" InputType="InputType.Password" FullWidth="true" Variant="Variant.Outlined" Class="mb-4" />
+            
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large"
+                       OnClick="Submit" Disabled="@_processing" Class="mt-4">
+                @if (_processing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Registering...</MudText>
+                }
+                else
+                {
+                    <MudText>Register</MudText>
+                }
+            </MudButton>
+            
+            <MudText Align="Align.Center" Class="mt-4">
+                Already have an account? <MudLink href="login">Login</MudLink>
+            </MudText>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private MudForm? _form;
+    private bool _success;
+    private bool _processing;
+    private RegisterRequest _model = new();
+
+    private async Task Submit()
+    {
+        _processing = true;
+        var result = await AuthService.RegisterAsync(_model);
+        if (result)
+        {
+            Snackbar.Add("Registration successful! You can now login.", Severity.Success);
+            Navigation.NavigateTo("login");
+        }
+        else
+        {
+            Snackbar.Add("Registration failed. Please try again.", Severity.Error);
+        }
+        _processing = false;
+    }
+}

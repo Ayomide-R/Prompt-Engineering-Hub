@@ -1,0 +1,44 @@
+@using PromptHub.Web.Models
+@using MudBlazor
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Expansion Details</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudText Typo="Typo.subtitle2">Timestamp</MudText>
+                <MudText Typo="Typo.body2">@Item.CreatedAt.ToString("f")</MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <MudText Typo="Typo.subtitle2">Provider</MudText>
+                <MudChip T="string" Color="Color.Info" Size="Size.Small">@Item.Provider</MudChip>
+            </MudItem>
+            <MudItem xs="12">
+                <MudDivider Class="my-2" />
+                <MudText Typo="Typo.subtitle2">Raw Prompt (Input)</MudText>
+                <MudPaper Class="pa-4 mt-1 mud-theme-dark" Elevation="0">
+                    <MudText Typo="Typo.body2" Style="white-space: pre-wrap;">@Item.RawPrompt</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12">
+                <MudText Typo="Typo.subtitle2" Class="mt-4">Expanded Prompt (Output)</MudText>
+                <MudPaper Class="pa-4 mt-1 mud-theme-dark" Elevation="1">
+                    <MudText Typo="Typo.body2" Style="white-space: pre-wrap;">@Item.ExpandedPrompt</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close" Color="Color.Primary">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public PromptHistoryDto Item { get; set; } = new();
+
+    private void Close() => MudDialog.Close();
+}

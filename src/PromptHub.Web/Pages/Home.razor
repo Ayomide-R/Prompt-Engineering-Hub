@@ -1,0 +1,60 @@
+@page "/"
+@inject PromptService PromptService
+@inject NavigationManager Navigation
+
+<PageTitle>PromptHub - Dashboard</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Public Templates</MudText>
+<MudText Class="mb-8">Browse and discover optimized prompt templates from the community.</MudText>
+
+@if (_templates == null)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+else if (!_templates.Any())
+{
+    <MudAlert Severity="Severity.Info">No public templates found. Why not create one?</MudAlert>
+}
+else
+{
+    <MudGrid>
+        @foreach (var template in _templates)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="2" Class="h-100 d-flex flex-column">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@template.Title</MudText>
+                            <MudChip T="string" Color="Color.Secondary" Size="Size.Small" Default="true">@template.Category</MudChip>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Default" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent Class="flex-grow-1">
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            @(template.Content.Length > 150 ? template.Content.Substring(0, 147) + "..." : template.Content)
+                        </MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => UseTemplate(template.Id))">Use Template</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+    private List<PromptTemplateDto>? _templates;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _templates = await PromptService.GetPublicTemplatesAsync();
+    }
+
+    private void UseTemplate(Guid id)
+    {
+        Navigation.NavigateTo($"/workspace?templateId={id}");
+    }
+}

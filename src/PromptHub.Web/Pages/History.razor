@@ -1,0 +1,55 @@
+@page "/history"
+@attribute [Authorize]
+@inject PromptService PromptService
+
+<PageTitle>PromptHub - History</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Your History</MudText>
+<MudText Class="mb-8">Review your past prompt expansions and their results.</MudText>
+
+@if (_history == null)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+else if (!_history.Any())
+{
+    <MudAlert Severity="Severity.Info">You haven't expanded any prompts yet.</MudAlert>
+}
+else
+{
+    <MudDataGrid Items="@_history" Filterable="true" SortMode="SortMode.Multiple" Groupable="false">
+        <Columns>
+            <PropertyColumn Property="x => x.CreatedAt" Title="Date" Format="g" />
+            <PropertyColumn Property="x => x.Provider" Title="Provider" />
+            <PropertyColumn Property="x => x.RawPrompt" Title="Input">
+                <CellTemplate>
+                    <MudText Typo="Typo.body2" Class="mud-text-truncate">@context.Item.RawPrompt</MudText>
+                </CellTemplate>
+            </PropertyColumn>
+            <TemplateColumn Title="Actions">
+                <CellTemplate>
+                    <MudButton Size="@Size.Small" Variant="@Variant.Outlined" Color="@Color.Primary" 
+                               OnClick="@(() => ShowDetail(context.Item))">Details</MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+}
+
+@code {
+    private List<PromptHistoryDto>? _history;
+
+    [Inject] private IDialogService DialogService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _history = await PromptService.GetHistoryAsync();
+    }
+
+    private async Task ShowDetail(PromptHistoryDto item)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<HistoryDetailDialog> { { x => x.Item, item } };
+        await DialogService.ShowAsync<HistoryDetailDialog>("Expansion Details", parameters, options);
+    }
+}

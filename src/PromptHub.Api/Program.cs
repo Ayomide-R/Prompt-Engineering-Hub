@@ -31,6 +31,18 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(xmlPath);
 });
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("BlazorPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5002", "https://localhost:7002") // Default Blazor ports
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
 // Add Health Checks
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>();
@@ -101,6 +113,7 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+app.UseCors("BlazorPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
