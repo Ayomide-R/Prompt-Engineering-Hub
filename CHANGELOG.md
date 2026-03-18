@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Blazor WebAssembly Frontend**: A complete modern UI using MudBlazor.
+- **Authentication**: JWT-based login, registration, and role-based access control.
+- **Prompt Workspace**: Interactive tool for prompt expansion and variable management.
+- **Dashboard**: Browse public prompt templates.
+- **Audit Logs**: Full transparency with administrative tracking.
+- **Modern Web UI**: A sleek, responsive Blazor WebAssembly frontend powered by MudBlazor.
+- **Observability**: **Health Checks** for application and database readiness monitoring.
 - **Multi-Model Support Completion**: Integrated **Anthropic (Claude 3)** and **Ollama (Local Llama)** support alongside Google Gemini and OpenAI.
 - **Role-Based Access Control (RBAC)**: Introduced `Admin` and `User` roles with policy-based authorization.
 - **Template Versioning**: Implemented automatic version archiving on update and revert capabilities.
