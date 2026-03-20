@@ -13,6 +13,7 @@ public class GeneratedPrompt
     public string FinalPrompt { get; set; } = string.Empty;
 
     public RoleType UsedRole { get; set; }
+    public string? UsedProvider { get; set; }
     
     public DateTime GeneratedAt { get; set; } = DateTime.UtcNow;
 

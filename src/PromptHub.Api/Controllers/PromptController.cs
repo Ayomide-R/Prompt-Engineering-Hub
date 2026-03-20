@@ -45,9 +45,38 @@ public class PromptController : ControllerBase
             generatedPrompt.OriginalInput, 
             generatedPrompt.FinalPrompt, 
             generatedPrompt.UsedRole, 
+            generatedPrompt.UsedProvider,
             generatedPrompt.GeneratedAt, 
             generatedPrompt.IsSaved, 
             generatedPrompt.PromptTemplateId);
+
+        return Ok(response);
+    }
+
+    [HttpPost("compare")]
+    public async Task<IActionResult> ComparePrompts([FromBody] ComparePromptsRequest request)
+    {
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
+
+        var results = await _promptService.ExpandPromptMultiAsync(request.OriginalInput, request.TemplateId, userId, request.Providers);
+
+        var response = results.Select(p => new PromptResponse(
+            p.Id, p.OriginalInput, p.FinalPrompt, p.UsedRole, p.UsedProvider, p.GeneratedAt, p.IsSaved, p.PromptTemplateId));
+
+        return Ok(response);
+    }
+
+    [HttpPost("batch")]
+    public async Task<IActionResult> BatchExpand([FromBody] BatchPromptRequest request)
+    {
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
+
+        var results = await _promptService.ExpandPromptBatchAsync(request.OriginalInputs, request.TemplateId, userId, request.Provider);
+
+        var response = results.Select(p => new PromptResponse(
+            p.Id, p.OriginalInput, p.FinalPrompt, p.UsedRole, p.UsedProvider, p.GeneratedAt, p.IsSaved, p.PromptTemplateId));
 
         return Ok(response);
     }
@@ -61,7 +90,7 @@ public class PromptController : ControllerBase
         var pagedPrompts = await _promptService.GetUserPromptsAsync(userId, pageNumber, pageSize);
         
         var dtos = pagedPrompts.Items.Select(p => new PromptResponse(
-            p.Id, p.OriginalInput, p.FinalPrompt, p.UsedRole, p.GeneratedAt, p.IsSaved, p.PromptTemplateId));
+            p.Id, p.OriginalInput, p.FinalPrompt, p.UsedRole, p.UsedProvider, p.GeneratedAt, p.IsSaved, p.PromptTemplateId));
             
         var response = new PromptHub.Application.DTOs.Common.PagedResponse<PromptResponse>(
             dtos, pagedPrompts.TotalCount, pagedPrompts.PageNumber, pagedPrompts.PageSize);
@@ -76,7 +105,7 @@ public class PromptController : ControllerBase
         if (prompt == null) return NotFound();
 
         var response = new PromptResponse(
-            prompt.Id, prompt.OriginalInput, prompt.FinalPrompt, prompt.UsedRole, prompt.GeneratedAt, prompt.IsSaved, prompt.PromptTemplateId);
+            prompt.Id, prompt.OriginalInput, prompt.FinalPrompt, prompt.UsedRole, prompt.UsedProvider, prompt.GeneratedAt, prompt.IsSaved, prompt.PromptTemplateId);
 
         return Ok(response);
     }

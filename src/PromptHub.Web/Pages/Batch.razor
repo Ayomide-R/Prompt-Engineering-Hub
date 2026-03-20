@@ -1,0 +1,163 @@
+@page "/batch"
+@attribute [Authorize]
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@using PromptHub.Web.Models
+@using System.Text.Json
+
+<PageTitle>PromptHub - Batch Expansion</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Batch Prompt Expansion</MudText>
+<MudText Class="mb-8">Upload a JSON or CSV file containing multiple tasks for bulk expansion.</MudText>
+
+<MudGrid>
+    <MudItem xs="12" md="6">
+        <MudCard Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h6" GutterBottom="true">Upload File</MudText>
+            <MudFileUpload T="IBrowserFile" FilesChanged="OnFileUploaded" Accept=".json,.csv">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Choose File
+                    </MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
+
+            @if (_fileName != null)
+            {
+                <MudText Class="mt-2">Selected: @_fileName (@_taskCount tasks detected)</MudText>
+            }
+
+            <MudSelect T="string" Label="AI Provider" @bind-Value="_provider" Class="mt-4">
+                <MudSelectItem Value="@("Gemini")">Gemini</MudSelectItem>
+                <MudSelectItem Value="@("OpenAI")">OpenAI</MudSelectItem>
+                <MudSelectItem Value="@("Anthropic")">Anthropic</MudSelectItem>
+                <MudSelectItem Value="@("Ollama")">Ollama</MudSelectItem>
+            </MudSelect>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="RunBatch" 
+                       Disabled="@(_isProcessing || _tasks == null || !_tasks.Any())" Class="mt-4">
+                @if (_isProcessing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Processing...</MudText>
+                }
+                else
+                {
+                    <MudText>Process Batch</MudText>
+                }
+            </MudButton>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudCard Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h6" GutterBottom="true">Format Help</MudText>
+            <MudText Typo="Typo.body2">
+                <b>JSON:</b> A simple array of strings: <br />
+                <code>["Task 1", "Task 2", ...]</code>
+            </MudText>
+            <MudText Typo="Typo.body2" Class="mt-2">
+                <b>CSV:</b> One task per line. The first column is used as the input.
+            </MudText>
+        </MudCard>
+    </MudItem>
+
+    @if (_results != null)
+    {
+        <MudItem xs="12">
+            <MudText Typo="Typo.h5" Class="mt-8 mb-4">Results</MudText>
+            <MudDataGrid Items="@_results">
+                <Columns>
+                    <PropertyColumn Property="x => x.OriginalInput" Title="Original Task" />
+                    <TemplateColumn Title="Action">
+                        <CellTemplate>
+                            <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Color="Color.Default" OnClick="@(() => CopyToClipboard(context.Item.FinalPrompt))" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        </MudItem>
+    }
+</MudGrid>
+
+@inject IJSRuntime JSRuntime
+
+@code {
+    private string? _fileName;
+    private int _taskCount;
+    private List<string>? _tasks;
+    private string _provider = "Gemini";
+    private bool _isProcessing;
+    private List<PromptResponse>? _results;
+
+    private async Task OnFileUploaded(IBrowserFile file)
+    {
+        _fileName = file.Name;
+        _results = null;
+        try
+        {
+            using var stream = file.OpenReadStream();
+            using var reader = new StreamReader(stream);
+            var content = await reader.ReadToEndAsync();
+
+            if (file.Name.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+            {
+                _tasks = JsonSerializer.Deserialize<List<string>>(content);
+            }
+            else if (file.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            {
+                _tasks = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+
+            _taskCount = _tasks?.Count ?? 0;
+            Snackbar.Add($"Loaded {_taskCount} tasks.", Severity.Info);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error parsing file: {ex.Message}", Severity.Error);
+            _tasks = null;
+        }
+    }
+
+    private async Task RunBatch()
+    {
+        if (_tasks == null || !_tasks.Any()) return;
+
+        _isProcessing = true;
+        try
+        {
+            var request = new BatchPromptRequest
+            {
+                OriginalInputs = _tasks,
+                Provider = _provider
+            };
+
+            var response = await Http.PostAsJsonAsync("api/prompt/batch", request);
+            if (response.IsSuccessStatusCode)
+            {
+                _results = await response.Content.ReadFromJsonAsync<List<PromptResponse>>();
+                Snackbar.Add("Batch processing complete!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Batch expansion failed.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private async Task CopyToClipboard(string text)
+    {
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        Snackbar.Add("Copied to clipboard!", Severity.Success);
+    }
+}

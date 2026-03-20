@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Phase 7: Model Comparison & Batch Expansion**:
+  - **Global Persona Management**: System-wide registry for role-based master instructions with specialized Admin UI.
+  - **Side-by-Side Comparison**: New dual-card UI to compare prompt expansion across multiple AI models concurrently.
+  - **Batch Expansion**: Support for bulk-processing tasks via CSV/JSON file uploads in the frontend.
+  - **Provider Tracking**: Added `UsedProvider` to `GeneratedPrompt` domain and API for improved traceability.
+  - **Admin Navigation**: Updated NavMenu to include Personas, Compare, and Batch tools.
 - **Blazor WebAssembly Frontend**: A complete modern UI using MudBlazor.
 - **Authentication**: JWT-based login, registration, and role-based access control.
 - **Prompt Workspace**: Interactive tool for prompt expansion and variable management.

@@ -12,6 +12,7 @@ using PromptHub.Infrastructure.AI;
 using PromptHub.Infrastructure.Authentication;
 using PromptHub.Infrastructure.Data;
 using PromptHub.Application.Options;
+using PromptHub.Infrastructure.Services;
 
 namespace PromptHub.Infrastructure;
 
@@ -75,6 +76,7 @@ public static class DependencyInjection
         services.AddScoped<IPromptTemplateService, PromptTemplateService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAiProviderService, AiProviderService>();
+        services.AddScoped<IPersonaService, PersonaService>();
 
         // Authentication Services
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));

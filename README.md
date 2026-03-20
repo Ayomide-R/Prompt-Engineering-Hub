@@ -8,9 +8,12 @@ Welcome to the **Prompt Engineering Hub**! This application serves as an intelli
 - **Role-Based Access Control (RBAC)**: Fine-grained permissions with `Admin` and `User` roles.
 - **Prompt Template Versioning**: Automatically archive and revert to previous template versions.
 - **Integration with Microsoft Semantic Kernel**: Leverages the latest connectors for seamless AI provider orchestration.
-- **Role-Based Prompt Engineering**: Configure specialized personas (e.g., `SeniorDeveloper`, `LegalExpert`) to guide prompt expansion.
+- **Role-Based Prompt Engineering**: Configure specialized personas (e.g., `SeniorDeveloper`, `LegalExpert`) with system-wide master instructions.
+- **Global Persona Management**: Admin UI to manage fallback instructions for all model roles.
+- **Side-by-Side Model Comparison**: Concurrent expansion across multiple AI providers (Gemini, OpenAI, Claude, Ollama) for quality benchmarking.
+- **Batch Prompt Expansion**: Bulk processing of tasks via JSON or CSV file uploads.
 - **Template Management**: Create, search, and manage robust Prompt Templates.
-- **Pagination & History**: Browse your generated prompt history with efficient metadata.
+- **Pagination & History**: Browse your generated prompt history with provider-specific metadata.
 
 ## 🏗️ Architecture Stack
 

@@ -13,12 +13,33 @@ public class PromptTemplateDto
 
 public class ExpandPromptRequest
 {
-    public string Prompt { get; set; } = string.Empty;
-    public Dictionary<string, string> Variables { get; set; } = new();
+    public string OriginalInput { get; set; } = string.Empty;
+    public Guid? TemplateId { get; set; }
     public string Provider { get; set; } = "Gemini";
 }
 
-public class ExpandPromptResponse
+public class ComparePromptsRequest
 {
-    public string ExpandedPrompt { get; set; } = string.Empty;
+    public string OriginalInput { get; set; } = string.Empty;
+    public Guid? TemplateId { get; set; }
+    public List<string> Providers { get; set; } = new();
+}
+
+public class BatchPromptRequest
+{
+    public List<string> OriginalInputs { get; set; } = new();
+    public Guid? TemplateId { get; set; }
+    public string? Provider { get; set; } = "Gemini";
+}
+
+public class PromptResponse
+{
+    public Guid Id { get; set; }
+    public string OriginalInput { get; set; } = string.Empty;
+    public string FinalPrompt { get; set; } = string.Empty;
+    public string UsedRole { get; set; } = string.Empty;
+    public string? UsedProvider { get; set; }
+    public DateTime GeneratedAt { get; set; }
+    public bool IsSaved { get; set; }
+    public Guid? TemplateId { get; set; }
 }

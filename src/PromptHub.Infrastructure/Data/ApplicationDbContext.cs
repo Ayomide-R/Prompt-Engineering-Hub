@@ -14,6 +14,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<PromptTemplate> PromptTemplates { get; set; } = null!;
     public DbSet<GeneratedPrompt> GeneratedPrompts { get; set; } = null!;
     public DbSet<PromptTemplateVersion> PromptTemplateVersions { get; set; } = null!;
+    public DbSet<GlobalPersona> GlobalPersonas { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,5 +49,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             .WithMany(pt => pt.GeneratedPrompts)
             .HasForeignKey(gp => gp.PromptTemplateId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<GlobalPersona>()
+            .HasIndex(p => p.Role)
+            .IsUnique();
     }
 }

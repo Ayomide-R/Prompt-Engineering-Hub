@@ -9,5 +9,6 @@ public interface IApplicationDbContext
     DbSet<PromptTemplate> PromptTemplates { get; set; }
     DbSet<GeneratedPrompt> GeneratedPrompts { get; set; }
     DbSet<PromptTemplateVersion> PromptTemplateVersions { get; set; }
+    DbSet<GlobalPersona> GlobalPersonas { get; set; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

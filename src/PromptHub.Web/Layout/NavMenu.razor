@@ -11,11 +11,14 @@
     <MudNavMenu>
         <MudNavLink href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
         <MudNavLink href="workspace" Icon="@Icons.Material.Filled.EditNote">Workspace</MudNavLink>
+        <MudNavLink href="compare" Icon="@Icons.Material.Filled.Compare">Compare</MudNavLink>
+        <MudNavLink href="batch" Icon="@Icons.Material.Filled.DynamicFeed">Batch Expansion</MudNavLink>
         <MudNavLink href="history" Icon="@Icons.Material.Filled.History">History</MudNavLink>
         
         <AuthorizeView Roles="Admin">
             <MudText Typo="Typo.overline" Class="px-4 mt-4 mud-text-secondary">Admin</MudText>
             <MudNavLink href="admin/audit-logs" Icon="@Icons.Material.Filled.Rule">Audit Logs</MudNavLink>
+            <MudNavLink href="admin/personas" Icon="@Icons.Material.Filled.TheaterComedy">Personas</MudNavLink>
             <MudNavLink href="admin/users" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
         </AuthorizeView>
 

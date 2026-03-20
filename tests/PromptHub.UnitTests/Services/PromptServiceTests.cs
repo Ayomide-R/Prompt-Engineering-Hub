@@ -13,13 +13,15 @@ public class PromptServiceTests
 {
     private readonly Mock<IApplicationDbContext> _contextMock;
     private readonly Mock<IAiProviderService> _aiProviderMock;
+    private readonly Mock<IPersonaService> _personaServiceMock;
     private readonly PromptService _promptService;
 
     public PromptServiceTests()
     {
         _contextMock = new Mock<IApplicationDbContext>();
         _aiProviderMock = new Mock<IAiProviderService>();
-        _promptService = new PromptService(_contextMock.Object, _aiProviderMock.Object);
+        _personaServiceMock = new Mock<IPersonaService>();
+        _promptService = new PromptService(_contextMock.Object, _aiProviderMock.Object, _personaServiceMock.Object);
     }
 
     [Fact]
@@ -34,7 +36,7 @@ public class PromptServiceTests
         var mockDbSet = prompts.BuildMockDbSet();
         _contextMock.Setup(c => c.GeneratedPrompts).Returns(mockDbSet.Object);
         
-        _aiProviderMock.Setup(a => a.GenerateExpandedPromptAsync(originalInput, RoleType.GeneralAssistant, It.IsAny<string>()))
+        _aiProviderMock.Setup(a => a.GenerateExpandedPromptAsync(originalInput, RoleType.GeneralAssistant, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<Dictionary<string, string>?>()))
             .ReturnsAsync(expandedText);
 
         // Act
@@ -72,7 +74,7 @@ public class PromptServiceTests
         var mockPromptDbSet = prompts.BuildMockDbSet();
         _contextMock.Setup(c => c.GeneratedPrompts).Returns(mockPromptDbSet.Object);
 
-        _aiProviderMock.Setup(a => a.GenerateExpandedPromptAsync(It.IsAny<string>(), RoleType.CreativeWriter, "Write creatively"))
+        _aiProviderMock.Setup(a => a.GenerateExpandedPromptAsync(It.IsAny<string>(), RoleType.CreativeWriter, "Write creatively", It.IsAny<string?>(), It.IsAny<Dictionary<string, string>?>()))
             .ReturnsAsync("Creative result");
 
         // Act
@@ -106,5 +108,47 @@ public class PromptServiceTests
         result.TotalCount.Should().Be(3);
         result.TotalPages.Should().Be(2);
         result.HasNextPage.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ExpandPromptMultiAsync_ShouldReturnMultiResults()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var providers = new List<string> { "Gemini", "OpenAI" };
+        
+        _aiProviderMock.Setup(a => a.GenerateExpandedPromptAsync(It.IsAny<string>(), It.IsAny<RoleType>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<Dictionary<string, string>?>()))
+            .ReturnsAsync("Result");
+
+        var prompts = new List<GeneratedPrompt>().AsQueryable();
+        _contextMock.Setup(c => c.GeneratedPrompts).Returns(prompts.BuildMockDbSet().Object);
+
+        // Act
+        var results = await _promptService.ExpandPromptMultiAsync("Task", null, userId, providers);
+
+        // Assert
+        results.Should().HaveCount(2);
+        _aiProviderMock.Verify(a => a.GenerateExpandedPromptAsync(It.IsAny<string>(), It.IsAny<RoleType>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<Dictionary<string, string>?>()), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task ExpandPromptBatchAsync_ShouldReturnBatchResults()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var inputs = new List<string> { "Task 1", "Task 2", "Task 3" };
+        
+        _aiProviderMock.Setup(a => a.GenerateExpandedPromptAsync(It.IsAny<string>(), It.IsAny<RoleType>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<Dictionary<string, string>?>()))
+            .ReturnsAsync("Result");
+
+        var prompts = new List<GeneratedPrompt>().AsQueryable();
+        _contextMock.Setup(c => c.GeneratedPrompts).Returns(prompts.BuildMockDbSet().Object);
+
+        // Act
+        var results = await _promptService.ExpandPromptBatchAsync(inputs, null, userId);
+
+        // Assert
+        results.Should().HaveCount(3);
+        _aiProviderMock.Verify(a => a.GenerateExpandedPromptAsync(It.IsAny<string>(), It.IsAny<RoleType>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<Dictionary<string, string>?>()), Times.Exactly(3));
     }
 }

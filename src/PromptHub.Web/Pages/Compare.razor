@@ -1,0 +1,117 @@
+@page "/compare"
+@attribute [Authorize]
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@using PromptHub.Web.Models
+
+<PageTitle>PromptHub - Model Comparison</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Model Comparison</MudText>
+<MudText Class="mb-8">Compare outputs from multiple AI models side-by-side.</MudText>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudCard Elevation="2" Class="pa-4">
+            <MudTextField @bind-Value="_request.OriginalInput" Label="Raw Input Task" Variant="Variant.Outlined" Lines="3" Placeholder="Describe your task here..." />
+            
+            <MudText Typo="Typo.subtitle1" Class="mt-4 mb-2">Select Providers to Compare</MudText>
+            <div class="d-flex gap-4 flex-wrap">
+                @foreach (var p in _availableProviders)
+                {
+                    <MudCheckBox T="bool" Value="@_selectedProviders.Contains(p)" ValueChanged="@((val) => OnProviderToggled(p, val))" Label="@p" Color="Color.Primary" />
+                }
+            </div>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RunComparison" Disabled="@(_isComparing || string.IsNullOrWhiteSpace(_request.OriginalInput) || !_selectedProviders.Any())" Class="mt-4">
+                @if (_isComparing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Comparing...</MudText>
+                }
+                else
+                {
+                    <MudText>Run Comparison</MudText>
+                }
+            </MudButton>
+        </MudCard>
+    </MudItem>
+
+    @if (_results != null)
+    {
+        @foreach (var result in _results)
+        {
+            <MudItem xs="12" md="6">
+                <MudCard Elevation="2" Class="h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@result.UsedProvider</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                             <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Color="Color.Default" OnClick="@(() => CopyToClipboard(result.FinalPrompt))" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudTextField Value="@result.FinalPrompt" Label="Expanded Prompt" Variant="Variant.Outlined" Lines="10" ReadOnly="true" />
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    }
+</MudGrid>
+
+@inject IJSRuntime JSRuntime
+
+@code {
+    private ComparePromptsRequest _request = new();
+    private List<string> _availableProviders = new() { "Gemini", "OpenAI", "Anthropic", "Ollama" };
+    private HashSet<string> _selectedProviders = new() { "Gemini", "OpenAI" };
+    private List<PromptResponse>? _results;
+    private bool _isComparing;
+
+    private void OnProviderToggled(string provider, bool selected)
+    {
+        if (selected) _selectedProviders.Add(provider);
+        else _selectedProviders.Remove(provider);
+    }
+
+    private async Task RunComparison()
+    {
+        _isComparing = true;
+        _results = null;
+        try
+        {
+            _request.Providers = _selectedProviders.ToList();
+            var response = await Http.PostAsJsonAsync("api/prompt/compare", _request);
+            if (response.IsSuccessStatusCode)
+            {
+                _results = await response.Content.ReadFromJsonAsync<List<PromptResponse>>();
+            }
+            else
+            {
+                Snackbar.Add("Failed to run comparison.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isComparing = false;
+        }
+    }
+
+    private string GetProviderNameForResult(PromptResponse result)
+    {
+        // This is a bit of a hack since PromptResponse doesn't explicitly store the provider name yet
+        // In a real app, we'd add Provider to GeneratedPrompt entity.
+        // For now, we'll try to correlate based on the order or add logic to backend.
+        return "AI Result"; // Placeholder
+    }
+
+    private async Task CopyToClipboard(string text)
+    {
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        Snackbar.Add("Copied to clipboard!", Severity.Success);
+    }
+}
