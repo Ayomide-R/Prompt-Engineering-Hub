@@ -14,7 +14,7 @@ public class PromptService
 
     public async Task<List<PromptTemplateDto>> GetPublicTemplatesAsync()
     {
-        var response = await _httpClient.GetAsync("api/Template");
+        var response = await _httpClient.GetAsync("api/Template/public");
         if (response.IsSuccessStatusCode)
         {
             return await response.Content.ReadFromJsonAsync<List<PromptTemplateDto>>() ?? new();

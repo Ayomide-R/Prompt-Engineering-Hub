@@ -16,7 +16,15 @@ public class ExpandPromptRequest
     public string OriginalInput { get; set; } = string.Empty;
     public Guid? TemplateId { get; set; }
     public string Provider { get; set; } = "Gemini";
+    public string Prompt { get; set; } = string.Empty;
+    public Dictionary<string, string> Variables { get; set; } = new();
 }
+
+public class ExpandPromptResponse
+{
+    public string ExpandedPrompt { get; set; } = string.Empty;
+}
+
 
 public class ComparePromptsRequest
 {

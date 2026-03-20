@@ -122,11 +122,13 @@ app.MapHealthChecks("/health");
 
 app.MapControllers();
 
+/*
 // Apply pending migrations during startup
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await context.Database.MigrateAsync();
 }
+*/
 
 app.Run();

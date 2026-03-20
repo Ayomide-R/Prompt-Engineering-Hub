@@ -8,7 +8,7 @@ using PromptHub.Web.Services;
 using PromptHub.Web.Handlers;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<PromptHub.Web.App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // Register MudBlazor
@@ -20,12 +20,12 @@ builder.Services.AddTransient<JwtAuthorizationMessageHandler>();
 // Register the HttpClient with the handler
 builder.Services.AddHttpClient("PromptHubApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:5001/"); // Replace with actual API URL
-})
-.AddHttpMessageHandler<JwtAuthorizationMessageHandler>();
+    client.BaseAddress = new Uri("http://localhost:5082/"); // Replace with actual API URL
+});
+// .AddHttpMessageHandler<JwtAuthorizationMessageHandler>();
 
 // Register default HttpClient for generic use (e.g., Auth endpoints that don't need the token yet)
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5001/") });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5082/") });
 
 // Register Auth Services
 builder.Services.AddAuthorizationCore();

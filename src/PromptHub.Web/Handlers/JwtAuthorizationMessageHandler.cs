@@ -14,11 +14,19 @@ public class JwtAuthorizationMessageHandler : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var token = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken", cancellationToken);
-
-        if (!string.IsNullOrWhiteSpace(token))
+        try
         {
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var token = await _jsRuntime.InvokeAsync<string>("eval", "localStorage.getItem('authToken')");
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error or ignore if JS interop is not yet available
+            Console.WriteLine($"Token retrieval failed: {ex.Message}");
         }
 
         return await base.SendAsync(request, cancellationToken);
