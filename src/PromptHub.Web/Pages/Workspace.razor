@@ -6,72 +6,135 @@
 
 <PageTitle>PromptHub - Workspace</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Workspace</MudText>
-<MudText Class="mb-8">Customize your prompt and expand it using multiple AI providers.</MudText>
+<div class="mb-10">
+    <MudText Typo="Typo.h3" Class="gradient-text mb-2" Style="font-weight: 800;">Workspace</MudText>
+    <MudText Typo="Typo.body1" Class="text-muted">Craft, refine, and expand your prompts with precision using industry-leading AI models.</MudText>
+</div>
 
-<MudGrid>
-    <MudItem xs="12" md="6">
-        <MudPaper Elevation="4" Class="pa-6">
-            <MudText Typo="Typo.h5" Class="mb-4">Input</MudText>
-            
-            @if (_isLoadingTemplate)
-            {
-                <MudProgressCircular Indeterminate="true" Size="Size.Small" />
-            }
-            else
-            {
-                <MudTextField T="string" Label="Prompt Template" @bind-Value="_request.Prompt" 
-                              Lines="10" Variant="Variant.Outlined" Class="mb-4" />
-                
-                @if (_variables.Any())
+<MudGrid Spacing="6">
+    <MudItem xs="12" lg="7">
+        <MudPaper Elevation="0" Class="premium-card pa-8">
+            <div class="d-flex align-center justify-space-between mb-6">
+                <MudText Typo="Typo.h5" Style="font-weight: 700;">Engine</MudText>
+                @if (_isLoadingTemplate)
                 {
-                    <MudText Typo="Typo.subtitle2" Class="mb-2">Variables</MudText>
-                    @foreach (var variable in _variables.Keys.ToList())
-                    {
-                        <MudTextField T="string" Label="@variable" @bind-Value="_variables[variable]" 
-                                      Variant="Variant.Filled" Margin="Margin.Dense" Class="mb-2" />
-                    }
+                    <MudProgressCircular Indeterminate="true" Size="Size.Small" Color="Color.Primary" />
                 }
+            </div>
+            
+            <MudTextField T="string" Label="Prompt Template" @bind-Value="_request.Prompt" 
+                          Lines="12" Variant="Variant.Outlined" 
+                          Placeholder="Enter your template here... use {{variable}} for dynamic fields."
+                          Class="mb-6 modern-textfield" 
+                          OnKeyUp="OnPromptKeyUp" />
+            
+            @if (_variables.Any())
+            {
+                <div class="mb-6">
+                    <MudText Typo="Typo.subtitle1" Class="mb-3" Style="font-weight: 600; color: var(--primary);">Variables</MudText>
+                    <MudGrid Spacing="2">
+                        @foreach (var variable in _variables.Keys.ToList())
+                        {
+                            <MudItem xs="12" sm="6">
+                                <MudTextField T="string" Label="@variable" @bind-Value="_variables[variable]" 
+                                              Variant="Variant.Filled" Margin="Margin.Dense" 
+                                              Class="variable-input" />
+                            </MudItem>
+                        }
+                    </MudGrid>
+                </div>
+            }
 
-                <MudSelect T="string" Label="AI Provider" @bind-Value="_request.Provider" Class="mt-4" Variant="Variant.Outlined">
-                    <MudSelectItem Value="@("Gemini")" />
-                    <MudSelectItem Value="@("OpenAI")" />
-                    <MudSelectItem Value="@("Anthropic")" />
-                    <MudSelectItem Value="@("Ollama")" />
+            <div class="d-flex flex-column flex-sm-row gap-4 align-center mt-6">
+                <MudSelect T="string" Label="AI Provider" @bind-Value="_request.Provider" 
+                           Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter"
+                           Class="flex-grow-1 modern-select">
+                    <MudSelectItem Value="@("Gemini")">
+                        <div class="d-flex align-center gap-2">
+                            <MudIcon Icon="@Icons.Material.Filled.AutoAwesome" Size="Size.Small" Color="Color.Primary" />
+                            <span>Google Gemini</span>
+                        </div>
+                    </MudSelectItem>
+                    <MudSelectItem Value="@("OpenAI")">
+                        <div class="d-flex align-center gap-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Bolt" Size="Size.Small" Color="Color.Warning" />
+                            <span>OpenAI GPT</span>
+                        </div>
+                    </MudSelectItem>
+                    <MudSelectItem Value="@("Anthropic")">
+                        <div class="d-flex align-center gap-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Psychology" Size="Size.Small" Color="Color.Secondary" />
+                            <span>Anthropic Claude</span>
+                        </div>
+                    </MudSelectItem>
                 </MudSelect>
 
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-6"
-                           OnClick="OnExpand" Disabled="_isExpanding">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                           Size="Size.Large" Class="px-10 py-3 glow-btn flex-grow-0"
+                           OnClick="OnExpand" Disabled="_isExpanding"
+                           Style="height: 56px; min-width: 200px; font-weight: 700;">
                     @if (_isExpanding)
                     {
                         <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                        <MudText Class="ms-2">Expanding...</MudText>
+                        <MudText Class="ms-2">Processing...</MudText>
                     }
                     else
                     {
-                        <MudText>Expand Prompt</MudText>
+                        <span class="d-flex align-center gap-2">
+                            <MudIcon Icon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small" />
+                            Expand 
+                        </span>
                     }
                 </MudButton>
-            }
+            </div>
         </MudPaper>
     </MudItem>
 
-    <MudItem xs="12" md="6">
-        <MudPaper Elevation="4" Class="pa-6 mud-theme-dark" Style="height: 100%; min-height: 400px; overflow-y: auto;">
-            <MudText Typo="Typo.h5" Class="mb-4">Expanded Output</MudText>
-            @if (string.IsNullOrEmpty(_expandedOutput))
+    <MudItem xs="12" lg="5">
+        <MudPaper Elevation="0" Class="glass-panel pa-8 d-flex flex-column" Style="height: 100%; min-height: 500px;">
+            <div class="d-flex align-center justify-space-between mb-6">
+                <MudText Typo="Typo.h5" Style="font-weight: 700;">Output</MudText>
+                @if (!string.IsNullOrEmpty(_expandedOutput))
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Color="Color.Primary" 
+                                   OnClick="CopyToClipboard" Size="Size.Small" />
+                }
+            </div>
+
+            <div class="flex-grow-1 overflow-auto custom-scrollbar pr-2">
+                @if (string.IsNullOrEmpty(_expandedOutput))
+                {
+                    <div class="d-flex flex-column align-center justify-center h-100 text-center" style="opacity: 0.5;">
+                        <MudIcon Icon="@Icons.Material.Filled.Bolt" Style="font-size: 3rem;" Class="mb-4" />
+                        <MudText Typo="Typo.body1" Style="font-style: italic;">Your expanded prompt will appear here.</MudText>
+                    </div>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body1" Style="white-space: pre-wrap; line-height: 1.8; color: var(--text-main);">@_expandedOutput</MudText>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(_expandedOutput))
             {
-                <MudText Typo="Typo.body1" Class="mud-text-secondary italic">Result will appear here...</MudText>
-            }
-            else
-            {
-                <MudText Typo="Typo.body1" Style="white-space: pre-wrap;">@_expandedOutput</MudText>
-                <MudButton StartIcon="@Icons.Material.Filled.ContentCopy" Color="Color.Inherit" 
-                           Class="mt-4" OnClick="CopyToClipboard">Copy to Clipboard</MudButton>
+                <div class="mt-6 pt-4 border-t border-white border-opacity-10 d-flex justify-end">
+                    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary">Save Result</MudButton>
+                </div>
             }
         </MudPaper>
     </MudItem>
 </MudGrid>
+
+<style>
+    .modern-textfield .mud-input-outlined-border { border-color: var(--border-subtle) !important; }
+    .modern-textfield:hover .mud-input-outlined-border { border-color: var(--primary) !important; }
+    .variable-input .mud-input-root { background: rgba(255,255,255,0.03) !important; }
+    .modern-select .mud-input-outlined-border { border-color: var(--border-subtle) !important; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+</style>
 
 @code {
     private ExpandPromptRequest _request = new() { Provider = "Gemini" };
@@ -97,19 +160,30 @@
     private async Task LoadTemplate(Guid id)
     {
         _isLoadingTemplate = true;
-        var template = await PromptService.GetTemplateByIdAsync(id);
-        if (template != null)
+        try 
         {
-            _request.Prompt = template.Content;
-            // Simple regex/logic to find variables like {{variable}}
-            DetectVariables(template.Content);
+            var template = await PromptService.GetTemplateByIdAsync(id);
+            if (template != null)
+            {
+                _request.Prompt = template.Content;
+                DetectVariables(template.Content);
+            }
         }
-        _isLoadingTemplate = false;
+        catch (Exception)
+        {
+            Snackbar.Add("Failed to load template", Severity.Error);
+        }
+        finally 
+        {
+            _isLoadingTemplate = false;
+        }
     }
 
     private void DetectVariables(string content)
     {
         _variables.Clear();
+        if (string.IsNullOrEmpty(content)) return;
+
         var matches = System.Text.RegularExpressions.Regex.Matches(content, @"\{\{(.*?)\}\}");
         foreach (System.Text.RegularExpressions.Match match in matches)
         {
@@ -121,17 +195,38 @@
         }
     }
 
+    private void OnPromptKeyUp(KeyboardEventArgs e)
+    {
+        DetectVariables(_request.Prompt);
+    }
+
     private async Task OnExpand()
     {
+        if (string.IsNullOrWhiteSpace(_request.Prompt))
+        {
+             Snackbar.Add("Please enter a prompt template", Severity.Warning);
+             return;
+        }
+
         _isExpanding = true;
-        _request.Variables = _variables;
-        _expandedOutput = await PromptService.ExpandPromptAsync(_request);
-        _isExpanding = false;
+        try 
+        {
+            _request.Variables = _variables;
+            _expandedOutput = await PromptService.ExpandPromptAsync(_request);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Expansion failed: {ex.Message}", Severity.Error);
+        }
+        finally 
+        {
+            _isExpanding = false;
+        }
     }
 
     private async Task CopyToClipboard()
     {
         await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", _expandedOutput);
-        Snackbar.Add("Copied to clipboard!", Severity.Info);
+        Snackbar.Add("Copied to clipboard!", Severity.Success);
     }
 }

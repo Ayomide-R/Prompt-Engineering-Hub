@@ -4,34 +4,58 @@
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
-    <MudPaper Elevation="4" Class="pa-8">
+<PageTitle>PromptHub - Login</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="mt-16 pt-16">
+    <MudPaper Elevation="0" Class="premium-card pa-10 glass-panel">
+        <div class="text-center mb-8">
+            <MudIcon Icon="@Icons.Material.Filled.AutoAwesome" Color="Color.Primary" Style="font-size: 3rem;" />
+            <MudText Typo="Typo.h4" Class="mt-4 gradient-text" Style="font-weight: 800;">Welcome Back</MudText>
+            <MudText Typo="Typo.body2" Class="text-muted mt-2">Sign in to continue your creative journey.</MudText>
+        </div>
+
         <MudForm @ref="_form" @bind-IsValid="@_success">
-            <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Login</MudText>
-            <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!"
-                          @bind-Value="_model.Email" FullWidth="true" Variant="Variant.Outlined" Class="mb-4" />
-            <MudTextField T="string" Label="Password" Required="true" RequiredError="Password is required!"
-                          @bind-Value="_model.Password" InputType="InputType.Password" FullWidth="true" Variant="Variant.Outlined" Class="mb-4" />
+            <MudTextField T="string" Label="Email" Required="true" 
+                          RequiredError="Email address is required"
+                          @bind-Value="_model.Email" FullWidth="true" 
+                          Variant="Variant.Outlined" Class="mb-6 modern-textfield" 
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Email" 
+                          AdornmentColor="Color.Primary" />
+
+            <MudTextField T="string" Label="Password" Required="true" 
+                          RequiredError="Password is required"
+                          @bind-Value="_model.Password" InputType="InputType.Password" 
+                          FullWidth="true" Variant="Variant.Outlined" Class="mb-8 modern-textfield"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Lock" 
+                          AdornmentColor="Color.Primary" />
             
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large"
-                       OnClick="Submit" Disabled="@_processing" Class="mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" 
+                       Size="Size.Large" OnClick="Submit" Disabled="@_processing" 
+                       Class="py-3 glow-btn" Style="font-weight: 700; border-radius: 12px;">
                 @if (_processing)
                 {
                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                    <MudText Class="ms-2">Logging in...</MudText>
+                    <MudText Class="ms-2">Authenticating...</MudText>
                 }
                 else
                 {
-                    <MudText>Login</MudText>
+                    <MudText>Sign In</MudText>
                 }
             </MudButton>
             
-            <MudText Align="Align.Center" Class="mt-4">
-                Don't have an account? <MudLink href="register">Register</MudLink>
-            </MudText>
+            <div class="text-center mt-8">
+                <MudText Typo="Typo.body2" Class="text-muted">
+                    New to PromptHub? <MudLink href="register" Underline="Underline.Hover" Color="Color.Primary" Style="font-weight: 600;">Create an account</MudLink>
+                </MudText>
+            </div>
         </MudForm>
     </MudPaper>
 </MudContainer>
+
+<style>
+    .modern-textfield .mud-input-outlined-border { border-color: var(--border-subtle) !important; }
+    .modern-textfield:hover .mud-input-outlined-border { border-color: var(--primary) !important; }
+</style>
 
 @code {
     private MudForm? _form;
@@ -41,17 +65,30 @@
 
     private async Task Submit()
     {
+        await _form!.Validate();
+        if (!_success) return;
+
         _processing = true;
-        var result = await AuthService.LoginAsync(_model);
-        if (result)
+        try 
         {
-            Snackbar.Add("Login successful!", Severity.Success);
-            Navigation.NavigateTo("");
+            var result = await AuthService.LoginAsync(_model);
+            if (result)
+            {
+                Snackbar.Add("Welcome back!", Severity.Success);
+                Navigation.NavigateTo("");
+            }
+            else
+            {
+                Snackbar.Add("Invalid credentials. Please try again.", Severity.Error);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Snackbar.Add("Invalid email or password.", Severity.Error);
+            Snackbar.Add($"Connection error: {ex.Message}", Severity.Error);
         }
-        _processing = false;
+        finally 
+        {
+            _processing = false;
+        }
     }
 }

@@ -2,42 +2,54 @@
 @inject PromptService PromptService
 @inject NavigationManager Navigation
 
-<PageTitle>PromptHub - Dashboard</PageTitle>
+<PageTitle>PromptHub - Discover</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Public Templates</MudText>
-<MudText Class="mb-8">Browse and discover optimized prompt templates from the community.</MudText>
+<div class="mb-12">
+    <MudText Typo="Typo.h3" Class="gradient-text mb-2" Style="font-weight: 800;">Public Templates</MudText>
+    <MudText Typo="Typo.body1" Class="text-muted" Style="font-size: 1.1rem; max-width: 600px;">
+        Browse and discover optimized prompt templates crafted by the community to supercharge your AI workflows.
+    </MudText>
+</div>
 
 @if (_templates == null)
 {
-    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+    <div class="d-flex justify-center my-12 py-12">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+    </div>
 }
 else if (!_templates.Any())
 {
-    <MudAlert Severity="Severity.Info">No public templates found. Why not create one?</MudAlert>
+    <MudPaper Elevation="0" Class="glass-panel p-12 d-flex flex-column align-center justify-center text-center my-8">
+        <MudIcon Icon="@Icons.Material.Filled.FolderOff" Color="Color.Default" Style="font-size: 4rem; opacity: 0.3;" />
+        <MudText Typo="Typo.h5" Class="mt-4 mb-2">No public templates found</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted mb-6">Be the first to share a masterpiece with the community!</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Class="px-8 py-3 glow-btn" href="workspace">Create Template</MudButton>
+    </MudPaper>
 }
 else
 {
-    <MudGrid>
+    <MudGrid Spacing="6">
         @foreach (var template in _templates)
         {
             <MudItem xs="12" sm="6" md="4">
-                <MudCard Elevation="2" Class="h-100 d-flex flex-column">
-                    <MudCardHeader>
+                <MudCard Elevation="0" Class="premium-card h-100 d-flex flex-column overflow-hidden">
+                    <div style="height: 4px; background: linear-gradient(90deg, var(--primary), var(--secondary));"></div>
+                    <MudCardHeader Class="pb-2">
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6">@template.Title</MudText>
-                            <MudChip T="string" Color="Color.Secondary" Size="Size.Small" Default="true">@template.Category</MudChip>
+                            <div class="d-flex align-center justify-space-between mb-2">
+                                <MudChip T="string" Color="Color.Primary" Variant="Variant.Text" Size="Size.Small" Class="px-3" Style="background: var(--primary-glow); font-weight: 600;">@template.Category</MudChip>
+                                <MudIconButton Icon="@Icons.Material.Outlined.FavoriteBorder" Color="Color.Default" Size="Size.Small" />
+                            </div>
+                            <MudText Typo="Typo.h6" Style="font-weight: 700;">@template.Title</MudText>
                         </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudIconButton Icon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Default" />
-                        </CardHeaderActions>
                     </MudCardHeader>
-                    <MudCardContent Class="flex-grow-1">
-                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
-                            @(template.Content.Length > 150 ? template.Content.Substring(0, 147) + "..." : template.Content)
+                    <MudCardContent Class="flex-grow-1 pt-0">
+                        <MudText Typo="Typo.body2" Class="text-muted" Style="line-height: 1.6;">
+                            @(template.Content.Length > 120 ? template.Content.Substring(0, 117) + "..." : template.Content)
                         </MudText>
                     </MudCardContent>
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => UseTemplate(template.Id))">Use Template</MudButton>
+                    <MudCardActions Class="pa-4 pt-0">
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" EndIcon="@Icons.Material.Filled.ArrowForward" OnClick="@(() => UseTemplate(template.Id))" Style="font-weight: 600;">Use Template</MudButton>
                     </MudCardActions>
                 </MudCard>
             </MudItem>
@@ -50,7 +62,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _templates = await PromptService.GetPublicTemplatesAsync();
+        try 
+        {
+            _templates = await PromptService.GetPublicTemplatesAsync();
+        }
+        catch (Exception)
+        {
+            _templates = new();
+        }
     }
 
     private void UseTemplate(Guid id)
