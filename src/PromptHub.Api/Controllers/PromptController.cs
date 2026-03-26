@@ -36,7 +36,7 @@ public class PromptController : ControllerBase
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
         
-        var generatedPrompt = await _promptService.ExpandPromptAsync(request.OriginalInput, request.TemplateId, userId, request.Provider);
+        var generatedPrompt = await _promptService.ExpandPromptAsync(request.OriginalInput, request.TemplateId, userId, request.Provider, request.Role);
         
         _logger.LogInformation("Prompt expanded for User {UserId} using Template {TemplateId}", userId, request.TemplateId ?? Guid.Empty);
 
@@ -59,7 +59,7 @@ public class PromptController : ControllerBase
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
 
-        var results = await _promptService.ExpandPromptMultiAsync(request.OriginalInput, request.TemplateId, userId, request.Providers);
+        var results = await _promptService.ExpandPromptMultiAsync(request.OriginalInput, request.TemplateId, userId, request.Providers, null); // Roles not supported in Compare yet in API request DTO
 
         var response = results.Select(p => new PromptResponse(
             p.Id, p.OriginalInput, p.FinalPrompt, p.UsedRole, p.UsedProvider, p.GeneratedAt, p.IsSaved, p.PromptTemplateId));
@@ -73,7 +73,7 @@ public class PromptController : ControllerBase
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
 
-        var results = await _promptService.ExpandPromptBatchAsync(request.OriginalInputs, request.TemplateId, userId, request.Provider);
+        var results = await _promptService.ExpandPromptBatchAsync(request.OriginalInputs, request.TemplateId, userId, request.Provider, request.Role);
 
         var response = results.Select(p => new PromptResponse(
             p.Id, p.OriginalInput, p.FinalPrompt, p.UsedRole, p.UsedProvider, p.GeneratedAt, p.IsSaved, p.PromptTemplateId));

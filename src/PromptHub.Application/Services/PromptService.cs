@@ -18,31 +18,31 @@ public class PromptService : IPromptService
         _personaService = personaService;
     }
 
-    public async Task<GeneratedPrompt> ExpandPromptAsync(string originalInput, Guid? templateId, Guid userId, string? provider = null)
+    public async Task<GeneratedPrompt> ExpandPromptAsync(string originalInput, Guid? templateId, Guid userId, string? provider = null, Domain.Enums.RoleType? requestedRole = null)
     {
-        var role = await GetRoleAndInstructionAsync(templateId);
+        var role = await GetRoleAndInstructionAsync(templateId, requestedRole);
         return await ExecuteExpansionAsync(originalInput, role.Role, role.Instruction, templateId, userId, provider);
     }
 
-    public async Task<List<GeneratedPrompt>> ExpandPromptMultiAsync(string originalInput, Guid? templateId, Guid userId, List<string> providers)
+    public async Task<List<GeneratedPrompt>> ExpandPromptMultiAsync(string originalInput, Guid? templateId, Guid userId, List<string> providers, Domain.Enums.RoleType? requestedRole = null)
     {
-        var role = await GetRoleAndInstructionAsync(templateId);
+        var role = await GetRoleAndInstructionAsync(templateId, requestedRole);
         var tasks = providers.Select(p => ExecuteExpansionAsync(originalInput, role.Role, role.Instruction, templateId, userId, p));
         var results = await Task.WhenAll(tasks);
         return results.ToList();
     }
 
-    public async Task<List<GeneratedPrompt>> ExpandPromptBatchAsync(List<string> inputs, Guid? templateId, Guid userId, string? provider = null)
+    public async Task<List<GeneratedPrompt>> ExpandPromptBatchAsync(List<string> inputs, Guid? templateId, Guid userId, string? provider = null, Domain.Enums.RoleType? requestedRole = null)
     {
-        var role = await GetRoleAndInstructionAsync(templateId);
+        var role = await GetRoleAndInstructionAsync(templateId, requestedRole);
         var tasks = inputs.Select(input => ExecuteExpansionAsync(input, role.Role, role.Instruction, templateId, userId, provider));
         var results = await Task.WhenAll(tasks);
         return results.ToList();
     }
 
-    private async Task<(Domain.Enums.RoleType Role, string Instruction)> GetRoleAndInstructionAsync(Guid? templateId)
+    private async Task<(Domain.Enums.RoleType Role, string Instruction)> GetRoleAndInstructionAsync(Guid? templateId, Domain.Enums.RoleType? requestedRole = null)
     {
-        var role = Domain.Enums.RoleType.GeneralAssistant;
+        var role = requestedRole ?? Domain.Enums.RoleType.GeneralAssistant;
         
         if (templateId.HasValue)
         {
@@ -50,11 +50,14 @@ public class PromptService : IPromptService
             if (template != null)
             {
                 var templateInstruction = template.MasterInstruction;
-                if (!string.IsNullOrWhiteSpace(templateInstruction))
+                if (requestedRole == null && !string.IsNullOrWhiteSpace(templateInstruction))
                 {
                     return (template.DefaultRole, templateInstruction);
                 }
-                role = template.DefaultRole;
+                if (requestedRole == null)
+                {
+                    role = template.DefaultRole;
+                }
             }
         }
 
