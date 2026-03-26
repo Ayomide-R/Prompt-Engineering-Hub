@@ -28,18 +28,13 @@ public class PromptController : ControllerBase
     }
 
     [HttpPost("expand")]
-    [AllowAnonymous]
     public async Task<IActionResult> ExpandPrompt([FromBody] ExpandPromptRequest request)
     {
         var validationResult = await _expandValidator.ValidateAsync(request);
         if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!Guid.TryParse(userIdString, out var userId)) 
-        {
-            // Default user for testing if not auth
-            userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        }
+        if (!Guid.TryParse(userIdString, out var userId)) return Unauthorized();
         
         var generatedPrompt = await _promptService.ExpandPromptAsync(request.OriginalInput, request.TemplateId, userId, request.Provider, request.Role);
         
