@@ -8,21 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Phase 8: High-Performance React Migration**:
+  - **Framework Transition**: Migrated the entire frontend from Blazor WebAssembly to **React 18+** with **Vite** and **TypeScript** for superior performance and developer experience.
+  - **Premium Animation Suite**: Integrated **Framer Motion** for fluid entrance animations, staggered list reveals, and smooth layout transitions.
+  - **Modern Iconography**: Implemented **Lucide React** for a clean, consistent, and professional icon set.
+  - **Refined Authentication Flow**: 
+    - Finalized the **User Registration** page with a premium animated UI.
+    - Added "Confirm Password" validation and enhanced error handling.
+    - Seamless automatic login and redirection to the workspace upon onboarding.
+  - **Enhanced Workspace UI**: Improved the prompt expansion editor with better state management and responsive design.
 - **Phase 7: Model Comparison & Batch Expansion**:
   - **Global Persona Management**: System-wide registry for role-based master instructions with specialized Admin UI.
   - **Side-by-Side Comparison**: New dual-card UI to compare prompt expansion across multiple AI models concurrently.
   - **Batch Expansion**: Support for bulk-processing tasks via CSV/JSON file uploads in the frontend.
   - **Provider Tracking**: Added `UsedProvider` to `GeneratedPrompt` domain and API for improved traceability.
   - **Admin Navigation**: Updated NavMenu to include Personas, Compare, and Batch tools.
-- **Blazor WebAssembly Frontend**: A complete modern UI using MudBlazor.
-- **Authentication**: JWT-based login, registration, and role-based access control.
-- **Prompt Workspace**: Interactive tool for prompt expansion and variable management.
-- **Dashboard**: Browse public prompt templates.
-- **Audit Logs**: Full transparency with administrative tracking.
-- **Modern Web UI**: A sleek, responsive Blazor WebAssembly frontend powered by MudBlazor.
-- **Observability**: **Health Checks** for application and database readiness monitoring.
-- **Multi-Model Support Completion**: Integrated **Anthropic (Claude 3)** and **Ollama (Local Llama)** support alongside Google Gemini and OpenAI.
-- **Role-Based Access Control (RBAC)**: Introduced `Admin` and `User` roles with policy-based authorization.
+
+### Changed
+- **Frontend Stack**: Migrated from Blazor WebAssembly to **React 18+** for improved performance, animation capabilities (Framer Motion), and modern developer tooling (Vite).
+- **Authentication Handlers**: Replaced Blazor-specific JWT handlers with a React Context-based authentication provider.
+
+### Removed
+- **Blazor WebAssembly Project**: Deprecated and replaced the `PromptHub.Web` (Blazor) project with `PromptHub.React`.
 - **Template Versioning**: Implemented automatic version archiving on update and revert capabilities.
 - **Audit Logs**: Added admin-only `AuditController` to monitor system activities.
 - **Dynamic Provider Selection**: Users can now specify `"Gemini"`, `"OpenAI"`, `"Anthropic"`, or `"Ollama"` in expansion requests.

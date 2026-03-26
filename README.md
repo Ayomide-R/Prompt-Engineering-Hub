@@ -19,19 +19,22 @@ Welcome to the **Prompt Engineering Hub**! This application serves as an intelli
 
 This project is built using a highly decoupled **Clean Architecture** approach to ensure long-term maintainability.
 
-- **Framework**: .NET 10 ASP.NET Core Web API
+- **Backend Framework**: .NET 10 ASP.NET Core Web API
+- **Frontend Framework**: **React 18+** with **Vite** and **TypeScript**
+- **Animations**: **Framer Motion** for premium, high-performance UI transitions
+- **Iconography**: **Lucide React** for sleek, professional vector icons
 - **AI Integration**: Microsoft Semantic Kernel (`Connectors.Google`, `Connectors.OpenAI`)
 - **Database**: PostgreSQL via Entity Framework Core
-- **Authentication**: JWT Bearer Authentication middleware
-- **Input Validation**: Robust validation using **FluentValidation**
+- **Authentication**: JWT Bearer Authentication with React Context management
+- **Input Validation**: Robust validation using **FluentValidation** (Backend) and React Zod/State (Frontend)
 - **Global Error Handling**: Standardized RFC 7807 **ProblemDetails** responses via .NET 10 `IExceptionHandler`
 - **Unit Testing**: Comprehensive test suite with over **13+ tests** using **xUnit**, **Moq**, and **FluentAssertions**
 - **Docker Ready**: Production-optimized `Dockerfile` and `docker-compose.yml`.
 - **API Resilience**: Built-in **Rate Limiting** policy (fixed window) to protect AI resources.
-- **Audit Logging**: Admin-only access to system audit logs for key actions.
 - **Observability**: **Health Checks** for application and database readiness monitoring.
 
 ### Project Structure
+- `PromptHub.React`: Modern React frontend (Vite + TS + Framer Motion).
 - `PromptHub.Domain`: Core Entities (`User`, `PromptTemplate`, `GeneratedPrompt`) and business Rules.
 - `PromptHub.Application`: Core abstractions, interfaces, Data Transfer Objects (DTOs), Validators, and Business Logic Services.
 - `PromptHub.Infrastructure`: Implementation details including the EF Core `ApplicationDbContext` and Semantic Kernel integrations.
@@ -42,10 +45,9 @@ This project is built using a highly decoupled **Clean Architecture** approach t
 
 ### Prerequisites
 - .NET 10 SDK
+- Node.js (v18+) & npm
 - Docker & Docker Compose (Recommended)
 - OR Local PostgreSQL Server
-- A valid Google Gemini API Key
-- (Optional) A valid OpenAI API Key
 
 ### Installation & Run (via Docker Compose)
 
@@ -56,28 +58,40 @@ The easiest way to get started is using Docker:
    ```bash
    docker-compose up --build
    ```
-3. The API will be available at `http://localhost:8080` and Swagger UI at `http://localhost:8080/swagger`.
+3. The API will be available at `http://localhost:8080`, Swagger at `http://localhost:8080/swagger`, and Frontend at `http://localhost:3000`.
 
 ### Local Installation (Without Docker)
 
+#### Backend Setup
 1. Clone the repository:
    ```bash
    git clone https://github.com/Ayomide-R/Prompt-Engineering-Hub.git
    cd Prompt-Engineering-Hub
    ```
-
 2. Update `appsettings.json` in `src/PromptHub.Api` with your credentials.
-
 3. Apply database migrations:
    ```bash
-   dotnet tool install -g dotnet-ef
    dotnet ef database update --project src/PromptHub.Infrastructure --startup-project src/PromptHub.Api
    ```
-
 4. Build and Run:
    ```bash
    dotnet run --project src/PromptHub.Api
    ```
+
+#### Frontend Setup
+1. Navigate to the React directory:
+   ```bash
+   cd src/PromptHub.React
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+4. Access the app at `http://localhost:3000`.
 
 ### 🩺 Monitoring & Documentation
 

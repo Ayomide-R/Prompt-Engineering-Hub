@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PromptHub.Application.Interfaces;
 using PromptHub.Domain.Entities;
+using PromptHub.Application.DTOs.Auth;
 
 namespace PromptHub.Application.Services;
 
