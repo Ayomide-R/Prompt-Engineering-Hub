@@ -38,7 +38,9 @@ public class AuthServiceTests
         var result = await _authService.RegisterAsync("testuser", "test@example.com", "password123");
 
         // Assert
-        result.Should().Be("test_token");
+        result.Token.Should().Be("test_token");
+        result.Email.Should().Be("test@example.com");
+        result.Username.Should().Be("testuser");
         _contextMock.Verify(c => c.Users.Add(It.IsAny<User>()), Times.Once);
         _contextMock.Verify(c => c.SaveChangesAsync(default), Times.Once);
     }
@@ -72,7 +74,9 @@ public class AuthServiceTests
         var result = await _authService.LoginAsync("test@example.com", "password123");
 
         // Assert
-        result.Should().Be("test_token");
+        result.Token.Should().Be("test_token");
+        result.Email.Should().Be("test@example.com");
+        result.Username.Should().Be("testuser");
     }
 
     [Fact]

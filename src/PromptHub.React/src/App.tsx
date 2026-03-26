@@ -6,6 +6,7 @@ import Layout from './components/Layout'
 import Home from './pages/Home'
 import Workspace from './pages/Workspace'
 import Login from './pages/Login'
+import Register from './pages/Register'
 
 const App = () => {
   const location = useLocation();
@@ -18,7 +19,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/workspace" element={<Workspace />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<div className="text-center py-20">Registration coming soon...</div>} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </AnimatePresence>
       </Layout>

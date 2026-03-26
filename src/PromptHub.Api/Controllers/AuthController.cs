@@ -32,11 +32,11 @@ public class AuthController : ControllerBase
         var validationResult = await _registerValidator.ValidateAsync(request);
         if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
-        var token = await _authService.RegisterAsync(request.Username, request.Email, request.Password);
+        var response = await _authService.RegisterAsync(request.Username, request.Email, request.Password);
         
         _logger.LogInformation("User registered: {Username} ({Email})", request.Username, request.Email);
 
-        return Ok(new AuthResponse(token));
+        return Ok(response);
     }
 
     [HttpPost("login")]
@@ -45,10 +45,10 @@ public class AuthController : ControllerBase
         var validationResult = await _loginValidator.ValidateAsync(request);
         if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
 
-        var token = await _authService.LoginAsync(request.Email, request.Password);
+        var response = await _authService.LoginAsync(request.Email, request.Password);
         
         _logger.LogInformation("User logged in: {Email}", request.Email);
 
-        return Ok(new AuthResponse(token));
+        return Ok(response);
     }
 }

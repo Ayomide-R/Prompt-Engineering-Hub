@@ -1,7 +1,9 @@
+using PromptHub.Application.DTOs.Auth;
+
 namespace PromptHub.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<string> RegisterAsync(string username, string email, string password);
-    Task<string> LoginAsync(string email, string password);
+    Task<AuthResponse> RegisterAsync(string username, string email, string password);
+    Task<AuthResponse> LoginAsync(string email, string password);
 }

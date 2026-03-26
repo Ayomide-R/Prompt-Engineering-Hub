@@ -31,7 +31,7 @@ export interface RegisterRequest {
 export interface AuthResponse {
   token: string;
   email: string;
-  roles: string[];
+  username: string;
 }
 
 export enum RoleType {

@@ -7,6 +7,11 @@ export const authService = {
     return response.data;
   },
 
+  register: async (request: any): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>('/Auth/register', request);
+    return response.data;
+  },
+
   logout: () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userEmail');

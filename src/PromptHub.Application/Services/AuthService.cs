@@ -17,7 +17,7 @@ public class AuthService : IAuthService
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<string> RegisterAsync(string username, string email, string password)
+    public async Task<AuthResponse> RegisterAsync(string username, string email, string password)
     {
         // Check if user exists
         if (await _context.Users.AnyAsync(u => u.Email == email))
@@ -35,10 +35,11 @@ public class AuthService : IAuthService
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        return _jwtTokenGenerator.GenerateToken(user);
+        var token = _jwtTokenGenerator.GenerateToken(user);
+        return new AuthResponse(token, user.Email, user.Username);
     }
 
-    public async Task<string> LoginAsync(string email, string password)
+    public async Task<AuthResponse> LoginAsync(string email, string password)
     {
         var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         if (user == null || !_passwordHasher.Verify(password, user.PasswordHash))
@@ -46,6 +47,7 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
-        return _jwtTokenGenerator.GenerateToken(user);
+        var token = _jwtTokenGenerator.GenerateToken(user);
+        return new AuthResponse(token, user.Email, user.Username);
     }
 }
