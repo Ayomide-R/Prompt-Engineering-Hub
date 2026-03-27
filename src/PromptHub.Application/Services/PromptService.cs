@@ -27,17 +27,67 @@ public class PromptService : IPromptService
     public async Task<List<GeneratedPrompt>> ExpandPromptMultiAsync(string originalInput, Guid? templateId, Guid userId, List<string> providers, Domain.Enums.RoleType? requestedRole = null)
     {
         var role = await GetRoleAndInstructionAsync(templateId, requestedRole);
-        var tasks = providers.Select(p => ExecuteExpansionAsync(originalInput, role.Role, role.Instruction, templateId, userId, p));
-        var results = await Task.WhenAll(tasks);
-        return results.ToList();
+        
+        var expansionTasks = providers.Select(async p => 
+        {
+            var expandedText = await _aiProvider.GenerateExpandedPromptAsync(originalInput, role.Role, role.Instruction, p);
+            return new { Provider = p, ExpandedText = expandedText };
+        });
+        
+        var expansionResults = await Task.WhenAll(expansionTasks);
+        
+        var generatedPrompts = new List<GeneratedPrompt>();
+        foreach (var result in expansionResults)
+        {
+            generatedPrompts.Add(new GeneratedPrompt
+            {
+                OriginalInput = originalInput,
+                FinalPrompt = result.ExpandedText,
+                UsedRole = role.Role,
+                UsedProvider = result.Provider ?? "Gemini",
+                UserId = userId,
+                PromptTemplateId = templateId,
+                IsSaved = false
+            });
+        }
+
+        _context.GeneratedPrompts.AddRange(generatedPrompts);
+        await _context.SaveChangesAsync();
+
+        return generatedPrompts;
     }
 
     public async Task<List<GeneratedPrompt>> ExpandPromptBatchAsync(List<string> inputs, Guid? templateId, Guid userId, string? provider = null, Domain.Enums.RoleType? requestedRole = null)
     {
         var role = await GetRoleAndInstructionAsync(templateId, requestedRole);
-        var tasks = inputs.Select(input => ExecuteExpansionAsync(input, role.Role, role.Instruction, templateId, userId, provider));
-        var results = await Task.WhenAll(tasks);
-        return results.ToList();
+        
+        var expansionTasks = inputs.Select(async input => 
+        {
+            var expandedText = await _aiProvider.GenerateExpandedPromptAsync(input, role.Role, role.Instruction, provider);
+            return new { Input = input, ExpandedText = expandedText };
+        });
+        
+        var expansionResults = await Task.WhenAll(expansionTasks);
+        
+        var generatedPrompts = new List<GeneratedPrompt>();
+        foreach (var result in expansionResults)
+        {
+            generatedPrompts.Add(new GeneratedPrompt
+            {
+                OriginalInput = result.Input,
+                FinalPrompt = result.ExpandedText,
+                UsedRole = role.Role,
+                UsedProvider = provider ?? "Gemini",
+                UserId = userId,
+                PromptTemplateId = templateId,
+                IsSaved = false
+            });
+        }
+
+        _context.GeneratedPrompts.AddRange(generatedPrompts);
+        await _context.SaveChangesAsync();
+
+        return generatedPrompts;
     }
 
     private async Task<(Domain.Enums.RoleType Role, string Instruction)> GetRoleAndInstructionAsync(Guid? templateId, Domain.Enums.RoleType? requestedRole = null)
