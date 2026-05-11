@@ -1,6 +1,6 @@
 @inherits LayoutComponentBase
 
-<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+<MudThemeProvider IsDarkMode="@_isDarkMode" IsDarkModeChanged="@(v => _isDarkMode = v)" Theme="_theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -23,7 +23,7 @@
             </AuthorizeView>
         </div>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0" Class="mud-drawer-premium">
+    <MudDrawer Open="_drawerOpen" OpenChanged="@(v => _drawerOpen = v)" ClipMode="DrawerClipMode.Always" Elevation="0" Class="mud-drawer-premium">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
@@ -36,7 +36,7 @@
 @code {
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
-    private MudThemeProvider? _mudThemeProvider;
+
 
     private MudTheme _theme = new MudTheme()
     {

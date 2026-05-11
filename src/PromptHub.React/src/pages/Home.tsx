@@ -43,70 +43,93 @@ const Home: React.FC = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="space-y-12"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-20"
     >
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-4">
-          <h1 className="text-5xl font-extrabold tracking-tight">
-            Discover <span className="gradient-text">Public Templates</span>
-          </h1>
-          <p className="text-[var(--text-muted)] text-lg max-w-2xl">
-            Browse and discover optimized prompt templates crafted by the community to supercharge your AI workflows.
-          </p>
-        </div>
-
-        <div className="relative group w-full md:w-96">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--primary)] transition-colors" size={20} />
-          <input
-            type="text"
-            placeholder="Search templates or categories..."
-            className="w-full bg-[var(--surface-dark)] border border-[var(--border-subtle)] focus:border-[var(--primary)] rounded-xl py-3 pl-12 pr-4 outline-none transition-all focus:ring-4 focus:ring-[var(--primary-glow)]"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-4">
-          <Loader2 className="animate-spin text-[var(--primary)]" size={48} />
-          <p className="text-[var(--text-muted)] animate-pulse">Syncing with registry...</p>
-        </div>
-      ) : filteredTemplates.length > 0 ? (
+      <section className="flex flex-col items-center text-center gap-8 py-10">
         <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm font-semibold tracking-wider text-[var(--primary)] uppercase"
         >
-          {filteredTemplates.map(template => (
-            <TemplateCard 
-              key={template.id} 
-              template={template} 
-              onUse={(id) => navigate(`/workspace?templateId=${id}`)} 
-            />
-          ))}
+          Elevate Your AI Interactions
         </motion.div>
-      ) : (
-        <div className="glass-panel p-20 text-center flex flex-col items-center gap-6">
-          <div className="w-20 h-20 bg-[var(--surface-dark)] rounded-2xl flex items-center justify-center border border-[var(--border-subtle)]">
-            <Filter size={32} className="text-[var(--text-muted)]" />
+        <h1 className="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9]">
+          Master the <br />
+          <span className="gradient-text">Art of Prompts</span>
+        </h1>
+        <p className="text-[var(--text-muted)] text-xl max-w-3xl leading-relaxed font-medium">
+          The world's most advanced registry for high-fidelity AI prompt engineering. 
+          Discover, refine, and deploy optimized templates for the next generation of LLMs.
+        </p>
+        
+        <div className="w-full max-w-2xl mt-8">
+          <div className="relative group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--primary)] transition-colors" size={24} />
+            <input
+              type="text"
+              placeholder="Search the neural registry..."
+              className="w-full input-cyber py-5 pl-16 pr-6 text-lg"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
-          <div className="space-y-2">
-            <h3 className="text-2xl font-bold">No matches found</h3>
-            <p className="text-[var(--text-muted)]">Try adjusting your filters or search terms.</p>
-          </div>
-          <button 
-            onClick={() => setSearch('')}
-            className="text-[var(--primary)] font-semibold hover:underline"
-          >
-            Clear all searches
-          </button>
         </div>
-      )}
+      </section>
+
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+            <Sparkles className="text-[var(--primary)]" />
+            Curated Templates
+          </h2>
+          <div className="h-px flex-grow mx-8 bg-gradient-to-r from-white/10 to-transparent"></div>
+        </div>
+
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-24 gap-6">
+            <div className="relative">
+              <Loader2 className="animate-spin text-[var(--primary)]" size={64} />
+              <div className="absolute inset-0 blur-xl bg-[var(--primary)] opacity-20"></div>
+            </div>
+            <p className="text-[var(--text-muted)] font-bold tracking-widest uppercase text-sm animate-pulse">Synchronizing Registry...</p>
+          </div>
+        ) : filteredTemplates.length > 0 ? (
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+          >
+            {filteredTemplates.map(template => (
+              <div key={template.id} className="card-aura group">
+                <TemplateCard 
+                  template={template} 
+                  onUse={(id) => navigate(`/workspace?templateId=${id}`)} 
+                />
+              </div>
+            ))}
+          </motion.div>
+        ) : (
+          <div className="card-aura p-24 text-center flex flex-col items-center gap-8">
+            <div className="w-24 h-24 bg-white/5 rounded-3xl flex items-center justify-center border border-white/10">
+              <Filter size={40} className="text-[var(--text-muted)]" />
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-3xl font-bold">Registry Entry Not Found</h3>
+              <p className="text-[var(--text-muted)] text-lg">No templates match your current neural filters.</p>
+            </div>
+            <button 
+              onClick={() => setSearch('')}
+              className="btn-premium px-8"
+            >
+              Reset Filters
+            </button>
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 };

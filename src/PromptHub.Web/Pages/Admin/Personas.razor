@@ -1,4 +1,5 @@
 @page "/admin/personas"
+#nullable enable
 @attribute [Authorize(Roles = "Admin")]
 @inject HttpClient Http
 @inject ISnackbar Snackbar
@@ -30,8 +31,8 @@ else
                         </CardHeaderActions>
                     </MudCardHeader>
                     <MudCardContent>
-                        <MudTextField @bind-Value="persona.Description" Label="Description (Internal)" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-4" />
-                        <MudTextField @bind-Value="persona.MasterInstruction" Label="Master Instruction" Variant="Variant.Outlined" Lines="5" />
+                        <MudTextField Value="persona.Description" ValueChanged="@((string s) => persona.Description = s)" Label="Description (Internal)" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-4" />
+                        <MudTextField Value="persona.MasterInstruction" ValueChanged="@((string s) => persona.MasterInstruction = s)" Label="Master Instruction" Variant="Variant.Outlined" Lines="5" />
                     </MudCardContent>
                 </MudCard>
             </MudItem>

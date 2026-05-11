@@ -15,14 +15,13 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddMudServices();
 
 // Register the delegating handler
-builder.Services.AddTransient<JwtAuthorizationMessageHandler>();
+builder.Services.AddScoped<JwtAuthorizationMessageHandler>();
 
 // Register the HttpClient with the handler
 builder.Services.AddHttpClient("PromptHubApi", client =>
 {
     client.BaseAddress = new Uri("http://localhost:5082/"); // Replace with actual API URL
-});
-// .AddHttpMessageHandler<JwtAuthorizationMessageHandler>();
+}).AddHttpMessageHandler<JwtAuthorizationMessageHandler>();
 
 // Register default HttpClient for generic use (e.g., Auth endpoints that don't need the token yet)
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5082/") });

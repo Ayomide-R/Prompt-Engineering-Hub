@@ -47,6 +47,8 @@ Here is the user's raw input task:
         {
             // If the provider is not configured or AI fails, return a high-quality MOCK expansion for demonstration.
             // This ensures the application remains "functional" for the user guide and layman users.
+            var errorMessage = ex.Message.Contains("API_KEY_INVALID") ? "Invalid API Key" : ex.Message;
+            
             return $@"## [MOCK EXPANSION - {provider ?? "Default"}]
 ### Persona: {role}
 ### Objective: {rawInput}
@@ -56,7 +58,7 @@ Here is the user's raw input task:
 Provide a detailed, step-by-step response that emphasizes clarity, accuracy, and adherence to professional standards in this field.
 Ensure the output is formatted for optimal readability.""
 
-*(Note: This is a placeholder response as the {provider ?? "selected"} AI provider is not yet configured with a valid API key.)*";
+*(Note: AI Expansion failed with: {errorMessage}. Falling back to high-quality template.)*";
         }
     }
 }

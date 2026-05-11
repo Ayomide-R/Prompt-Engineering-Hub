@@ -1,0 +1,28 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  PromptHub.Domain -> C:\Users\ROY\.gemini\antigravity\scratch\PromptEngineeringHub\src\PromptHub.Domain\bin\Debug\net10.0\PromptHub.Domain.dll
+  PromptHub.Application -> C:\Users\ROY\.gemini\antigravity\scratch\PromptEngineeringHub\src\PromptHub.Application\bin\Debug\net10.0\PromptHub.Application.dll
+  PromptHub.Infrastructure -> C:\Users\ROY\.gemini\antigravity\scratch\PromptEngineeringHub\src\PromptHub.Infrastructure\bin\Debug\net10.0\PromptHub.Infrastructure.dll
+  PromptHub.UnitTests -> C:\Users\ROY\.gemini\antigravity\scratch\PromptEngineeringHub\tests\PromptHub.UnitTests\bin\Debug\net10.0\PromptHub.UnitTests.dll
+Test run for C:\Users\ROY\.gemini\antigravity\scratch\PromptEngineeringHub\tests\PromptHub.UnitTests\bin\Debug\net10.0\PromptHub.UnitTests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed PromptHub.UnitTests.Services.AuthServiceTests.LoginAsync_ShouldReturnToken_WhenCredentialsAreValid [85 ms]
+  Error Message:
+   Expected result.Username to be "testuser" with a length of 8, but "" has a length of 0, differs near "" (index 0).
+  Stack Trace:
+     at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message)
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+   at FluentAssertions.Execution.AssertionScope.AddPreFormattedFailure(String formattedFailureMessage)
+   at FluentAssertions.Execution.AssertionChain.FailWith(Func`1 getFailureReason)
+   at FluentAssertions.Execution.AssertionChain.FailWith(Func`1 getFailureReason)
+   at FluentAssertions.Primitives.StringEqualityStrategy.ValidateAgainstLengthDifferences(AssertionChain assertion, String subject, String expected)
+   at FluentAssertions.Primitives.StringEqualityStrategy.AssertForEquality(AssertionChain assertionChain, String subject, String expected)
+   at FluentAssertions.Primitives.StringValidator.Validate(String subject, String expected)
+   at FluentAssertions.Primitives.StringAssertions`1.Be(String expected, String because, Object[] becauseArgs)
+   at PromptHub.UnitTests.Services.AuthServiceTests.LoginAsync_ShouldReturnToken_WhenCredentialsAreValid() in C:\Users\ROY\.gemini\antigravity\scratch\PromptEngineeringHub\tests\PromptHub.UnitTests\Services\AuthServiceTests.cs:line 79
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     1, Passed:    16, Skipped:     0, Total:    17, Duration: 437 ms - PromptHub.UnitTests.dll (net10.0)

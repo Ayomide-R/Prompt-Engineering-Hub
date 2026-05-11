@@ -137,7 +137,7 @@
 </style>
 
 @code {
-    private ExpandPromptRequest _request = new() { Provider = "Gemini" };
+    private PromptHub.Web.Models.ExpandPromptRequest _request = new() { Provider = "Gemini" };
     private Dictionary<string, string> _variables = new();
     private string _expandedOutput = "";
     private bool _isExpanding;
@@ -211,6 +211,7 @@
         _isExpanding = true;
         try 
         {
+            _request.OriginalInput = _request.Prompt; // Map textarea value to API field
             _request.Variables = _variables;
             _expandedOutput = await PromptService.ExpandPromptAsync(_request);
         }

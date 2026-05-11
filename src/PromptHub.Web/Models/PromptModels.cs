@@ -22,7 +22,7 @@ public class ExpandPromptRequest
 
 public class ExpandPromptResponse
 {
-    public string ExpandedPrompt { get; set; } = string.Empty;
+    public string FinalPrompt { get; set; } = string.Empty;
 }
 
 

@@ -81,142 +81,152 @@ const Workspace: React.FC = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-8"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="space-y-12"
     >
-      <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-bold tracking-tight">
-          <span className="gradient-text">Workspace</span>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-4">
+          <div className="h-px w-12 bg-[var(--primary)]"></div>
+          <span className="text-sm font-bold tracking-[0.2em] text-[var(--primary)] uppercase">Neural Workspace</span>
+        </div>
+        <h1 className="text-5xl font-extrabold tracking-tighter">
+          Refine your <span className="gradient-text">Neural Signals</span>
         </h1>
-        <p className="text-[var(--text-muted)]">Select a persona and refine your prompts with high-precision AI expansion.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
         {/* Input Panel */}
         <motion.div 
-          initial={{ x: -20, opacity: 0 }}
+          initial={{ x: -30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="lg:col-span-7 premium-card pa-8 space-y-8"
+          className="lg:col-span-7 card-aura p-10 space-y-10"
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Cpu className="text-[var(--primary)]" />
-              <h2 className="text-xl font-bold">Configuration</h2>
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-[var(--primary)] bg-opacity-10 border border-[var(--primary)] border-opacity-20">
+                <Cpu className="text-[var(--primary)]" size={24} />
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight">Configuration</h2>
             </div>
-            {isLoadingTemplate && <Loader2 className="animate-spin text-[var(--primary)]" size={20} />}
+            {isLoadingTemplate && <Loader2 className="animate-spin text-[var(--primary)]" size={24} />}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-2">
-                <UserCircle size={16} /> AI Persona
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center gap-2">
+                <UserCircle size={14} /> Intelligence Persona
               </label>
               <select
                 value={request.role ?? 0}
                 onChange={(e) => setRequest(prev => ({ ...prev, role: parseInt(e.target.value) }))}
-                className="w-full bg-[var(--bg-dark)] border border-[var(--border-subtle)] focus:border-[var(--primary)] rounded-xl py-3 px-4 outline-none transition-all"
+                className="w-full input-cyber cursor-pointer appearance-none"
               >
                 {PERSONAS.map(p => (
-                  <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
+                  <option key={p.id} value={p.id} className="bg-[var(--surface)]">{p.icon} {p.name}</option>
                 ))}
               </select>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-2">
-                <Sparkles size={16} /> AI Provider
+            <div className="space-y-3">
+              <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center gap-2">
+                <Sparkles size={14} /> Compute Provider
               </label>
               <select
                 value={request.provider}
                 onChange={(e) => setRequest(prev => ({ ...prev, provider: e.target.value }))}
-                className="w-full bg-[var(--bg-dark)] border border-[var(--border-subtle)] focus:border-[var(--primary)] rounded-xl py-3 px-4 outline-none transition-all"
+                className="w-full input-cyber cursor-pointer appearance-none"
               >
-                <option value="Gemini">Google Gemini Pro</option>
-                <option value="OpenAI">OpenAI GPT-4</option>
-                <option value="Anthropic">Anthropic Claude 3</option>
+                <option value="Gemini" className="bg-[var(--surface)]">Google Gemini 1.5 Flash</option>
+                <option value="OpenAI" className="bg-[var(--surface)]">OpenAI GPT-4 Turbo</option>
+                <option value="Anthropic" className="bg-[var(--surface)]">Anthropic Claude 3.5</option>
               </select>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider">Raw Prompt Instruction</label>
+          <div className="space-y-3">
+            <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest">Base Instruction Set</label>
             <textarea
               value={request.originalInput}
               onChange={handlePromptChange}
-              placeholder="Enter your basic prompt here. The AI will expand it based on the selected persona."
-              className="w-full h-64 bg-[var(--bg-dark)] border border-[var(--border-subtle)] focus:border-[var(--primary)] rounded-xl p-6 outline-none transition-all resize-none font-mono text-sm leading-relaxed"
+              placeholder="Inject your core task here..."
+              className="w-full h-80 input-cyber resize-none font-mono text-sm leading-relaxed"
             />
           </div>
 
-          <div className="pt-4">
-            <button
-              onClick={onExpand}
-              disabled={isExpanding || !request.originalInput.trim()}
-              className="glow-btn w-full py-4 flex items-center justify-center gap-3 text-lg"
-            >
-              {isExpanding ? (
-                <>
-                  <Loader2 className="animate-spin" size={24} />
-                  Expanding with AI...
-                </>
-              ) : (
-                <>
-                  <Rocket size={24} />
-                  Expand High-Definition Prompt
-                </>
-              )}
-            </button>
-          </div>
+          <button
+            onClick={onExpand}
+            disabled={isExpanding || !request.originalInput.trim()}
+            className="btn-premium w-full text-xl py-5"
+          >
+            {isExpanding ? (
+              <>
+                <Loader2 className="animate-spin" size={28} />
+                Synthesizing...
+              </>
+            ) : (
+              <>
+                <Rocket size={28} />
+                Execute Neural Expansion
+              </>
+            )}
+          </button>
         </motion.div>
 
         {/* Output Panel */}
         <motion.div 
-          initial={{ x: 20, opacity: 0 }}
+          initial={{ x: 30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="lg:col-span-5 glass-panel pa-8 flex flex-col h-full min-h-[500px]"
+          className="lg:col-span-5 card-aura p-10 flex flex-col h-full min-h-[600px] border-opacity-50"
+          style={{ background: 'linear-gradient(180deg, var(--surface) 0%, rgba(15, 23, 42, 0.8) 100%)' }}
         >
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3 text-[var(--secondary)]">
-              <Sparkles />
-              <h2 className="text-xl font-bold">Refined Result</h2>
+          <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-[var(--secondary)] bg-opacity-10 border border-[var(--secondary)] border-opacity-20">
+                <Sparkles className="text-[var(--secondary)]" size={24} />
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight">Optimized Result</h2>
             </div>
             {expandedOutput && (
               <button
                 onClick={copyToClipboard}
-                className="p-2 hover:bg-white hover:bg-opacity-5 rounded-lg transition-colors flex items-center gap-2 text-sm"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-sm font-bold"
               >
-                {copied ? <Check size={18} className="text-green-400" /> : <Copy size={18} />}
+                {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
                 {copied ? 'Copied' : 'Copy'}
               </button>
             )}
           </div>
 
-          <div className="flex-grow overflow-auto pr-2 custom-scrollbar">
+          <div className="flex-grow overflow-auto pr-4 custom-scrollbar">
             {isExpanding ? (
-              <div className="h-full flex flex-col items-center justify-center gap-6 opacity-40">
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                >
-                  <Send size={48} className="text-[var(--primary)]" />
-                </motion.div>
-                <p className="text-center font-medium">Communicating with AI...</p>
+              <div className="h-full flex flex-col items-center justify-center gap-8">
+                <div className="relative">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
+                    className="w-24 h-24 rounded-full border-2 border-dashed border-[var(--primary)] opacity-20"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Send size={40} className="text-[var(--primary)] animate-pulse" />
+                  </div>
+                </div>
+                <p className="text-center font-bold tracking-widest text-[var(--text-muted)] uppercase text-xs">Processing via Neural Link...</p>
               </div>
             ) : expandedOutput ? (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="whitespace-pre-wrap leading-loose text-lg text-[var(--text-main)] font-light"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="whitespace-pre-wrap leading-relaxed text-[var(--text-main)] font-medium text-lg"
               >
                 {expandedOutput}
               </motion.div>
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-center opacity-30 gap-4">
-                <div className="p-6 rounded-full bg-white bg-opacity-5">
-                  <Rocket size={48} />
+              <div className="h-full flex flex-col items-center justify-center text-center opacity-20 gap-8">
+                <div className="p-10 rounded-full border-2 border-dashed border-white/20">
+                  <Rocket size={64} />
                 </div>
-                <p className="text-lg">Your high-fidelity prompt will appear here after expansion.</p>
+                <p className="text-xl font-bold tracking-tight">Awaiting Neural Sequence...</p>
               </div>
             )}
           </div>
@@ -224,25 +234,21 @@ const Workspace: React.FC = () => {
           <AnimatePresence>
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="mt-6 p-4 rounded-xl bg-red-500 bg-opacity-10 border border-red-500 border-opacity-20 flex items-start gap-3"
+                className="mt-8 p-5 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-start gap-4"
               >
-                <AlertCircle className="text-red-400 shrink-0" size={20} />
-                <p className="text-sm text-red-100">{error}</p>
+                <AlertCircle className="text-red-400 shrink-0" size={24} />
+                <div className="space-y-1">
+                  <p className="font-bold text-red-400 text-sm">Communication Failure</p>
+                  <p className="text-sm text-red-200/80 leading-relaxed">{error}</p>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
       </div>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
-      `}</style>
     </motion.div>
   );
 };

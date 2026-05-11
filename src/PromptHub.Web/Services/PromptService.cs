@@ -32,8 +32,8 @@ public class PromptService
         var response = await _httpClient.PostAsJsonAsync("api/Prompt/expand", request);
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadFromJsonAsync<ExpandPromptResponse>();
-            return result?.ExpandedPrompt ?? string.Empty;
+            var result = await response.Content.ReadFromJsonAsync<PromptHub.Web.Models.ExpandPromptResponse>();
+            return result?.FinalPrompt ?? string.Empty;
         }
         return "Error expanding prompt.";
     }

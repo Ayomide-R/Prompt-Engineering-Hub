@@ -63,7 +63,7 @@ public class AuthServiceTests
     public async Task LoginAsync_ShouldReturnToken_WhenCredentialsAreValid()
     {
         // Arrange
-        var user = new User { Email = "test@example.com", PasswordHash = "hashed_password" };
+        var user = new User { Username = "testuser", Email = "test@example.com", PasswordHash = "hashed_password" };
         var users = new List<User> { user }.AsQueryable();
         var mockDbSet = users.BuildMockDbSet();
         _contextMock.Setup(c => c.Users).Returns(mockDbSet.Object);

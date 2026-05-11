@@ -1,0 +1,1 @@
+using System; using System.Reflection; using Microsoft.AspNetCore.Components.Forms; class Program { static void Main() { foreach(var p in typeof(MudBlazor.MudFileUpload<IBrowserFile>).GetProperties()) Console.WriteLine(p.Name); } }  

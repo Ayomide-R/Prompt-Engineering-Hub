@@ -4,6 +4,7 @@ export interface PromptTemplateDto {
   content: string;
   category: string;
   isPublic: boolean;
+  defaultRole?: RoleType;
 }
 
 export interface ExpandPromptRequest {

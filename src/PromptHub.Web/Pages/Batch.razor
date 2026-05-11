@@ -1,9 +1,11 @@
 @page "/batch"
+#nullable enable
 @attribute [Authorize]
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @using PromptHub.Web.Models
 @using System.Text.Json
+@using MudBlazor
 
 <PageTitle>PromptHub - Batch Expansion</PageTitle>
 
@@ -15,13 +17,13 @@
         <MudCard Elevation="2" Class="pa-4">
             <MudText Typo="Typo.h6" GutterBottom="true">Upload File</MudText>
             <MudFileUpload T="IBrowserFile" FilesChanged="OnFileUploaded" Accept=".json,.csv">
-                <ActivatorContent>
+                <Template>
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Primary"
                                StartIcon="@Icons.Material.Filled.CloudUpload">
                         Choose File
                     </MudButton>
-                </ActivatorContent>
+                </Template>
             </MudFileUpload>
 
             @if (_fileName != null)
@@ -29,7 +31,7 @@
                 <MudText Class="mt-2">Selected: @_fileName (@_taskCount tasks detected)</MudText>
             }
 
-            <MudSelect T="string" Label="AI Provider" @bind-Value="_provider" Class="mt-4">
+            <MudSelect T="string" Label="AI Provider" Value="_provider" ValueChanged="v => _provider = v" Class="mt-4">
                 <MudSelectItem Value="@("Gemini")">Gemini</MudSelectItem>
                 <MudSelectItem Value="@("OpenAI")">OpenAI</MudSelectItem>
                 <MudSelectItem Value="@("Anthropic")">Anthropic</MudSelectItem>
